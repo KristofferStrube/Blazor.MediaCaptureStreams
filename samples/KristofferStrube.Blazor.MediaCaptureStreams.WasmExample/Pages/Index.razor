@@ -1,0 +1,44 @@
+﻿@page "/"
+@inject IMediaDevicesService MediaDevicesService
+
+<PageTitle>Media Capture and Streams - Load Devices</PageTitle>
+
+<h2>On this page we try to load the available media devices in your browser.</h2>
+
+@if (error is {} errorMessage)
+{
+    <p style="color: red;">@errorMessage</p>
+}
+else
+{
+    <h3>Devices:</h3>
+    @foreach(var device in deviceList)
+    {
+        <div>
+            <b>@device.label</b>: @device.id
+        </div>
+    }
+}
+
+@code {
+    private List<(string label, string id)> deviceList = new();
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
+            var devices = await mediaDevices.EnumerateDevicesAsync();
+            deviceList.Clear();
+            foreach (var device in devices)
+            {
+                deviceList.Add((await device.GetLabelAsync(), await device.GetDeviceIdAsync()));
+            }
+        }
+        catch
+        {
+            error = "Could not load media devices";
+        }
+    }
+}

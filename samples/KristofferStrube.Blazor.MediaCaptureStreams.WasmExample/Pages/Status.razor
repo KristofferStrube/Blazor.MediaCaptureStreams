@@ -1,0 +1,190 @@
+﻿@page "/Status"
+
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Media Capture and Streams - Status</PageTitle>
+
+<pre><code>@((MarkupString)compareText)</code></pre>
+
+@code {
+    private string compareText = "";
+
+    protected override void OnInitialized()
+    {
+        var compareLines = new List<string>();
+        var lines = webIDL.Replace("<", "&lt;").Split('\n');
+        for (int i = 0; i < lines.Count(); i++)
+        {
+            var color = supportedRows.Any(interval => i >= interval.start && i <= interval.end) ? "lightgreen" : "pink";
+            compareLines.Add($"""<span style="background-color:{color};display:block;min-height:21px;">{lines[i]}</span>""");
+        }
+
+        compareText = string.Join("", compareLines);
+        StateHasChanged();
+    }
+
+    private (int start, int end)[] supportedRows = new (int start, int end)[] {
+        (0, 5),
+        (8, 8)
+    };
+
+    private const string webIDL = @"partial interface Navigator {
+    [SameObject, SecureContext] readonly attribute MediaDevices mediaDevices;
+};
+
+[Exposed=Window, SecureContext]
+interface MediaDevices : EventTarget {
+    attribute EventHandler ondevicechange;
+    Promise<sequence<MediaDeviceInfo>> enumerateDevices();
+};
+
+[Exposed=Window, SecureContext]
+interface MediaDeviceInfo {
+    readonly attribute DOMString deviceId;
+    readonly attribute MediaDeviceKind kind;
+    readonly attribute DOMString label;
+    readonly attribute DOMString groupId;
+    [Default] object toJSON();
+};
+
+enum MediaDeviceKind {
+    ""audioinput"",
+    ""audiooutput"",
+    ""videoinput""
+};
+
+[Exposed=Window, SecureContext]
+interface InputDeviceInfo : MediaDeviceInfo {
+    MediaTrackCapabilities getCapabilities();
+};
+
+dictionary MediaTrackCapabilities {
+    ULongRange width;
+    ULongRange height;
+    DoubleRange aspectRatio;
+    DoubleRange frameRate;
+    sequence<DOMString> facingMode;
+    sequence<DOMString> resizeMode;
+    ULongRange sampleRate;
+    ULongRange sampleSize;
+    sequence<boolean> echoCancellation;
+    sequence<boolean> autoGainControl;
+    sequence<boolean> noiseSuppression;
+    DoubleRange latency;
+    ULongRange channelCount;
+    DOMString deviceId;
+    DOMString groupId;
+};
+
+partial interface MediaDevices {
+    MediaTrackSupportedConstraints getSupportedConstraints();
+    Promise<MediaStream> getUserMedia(optional MediaStreamConstraints constraints = {});
+};
+
+dictionary MediaTrackSupportedConstraints {
+    boolean width = true;
+    boolean height = true;
+    boolean aspectRatio = true;
+    boolean frameRate = true;
+    boolean facingMode = true;
+    boolean resizeMode = true;
+    boolean sampleRate = true;
+    boolean sampleSize = true;
+    boolean echoCancellation = true;
+    boolean autoGainControl = true;
+    boolean noiseSuppression = true;
+    boolean latency = true;
+    boolean channelCount = true;
+    boolean deviceId = true;
+    boolean groupId = true;
+};
+
+dictionary MediaStreamConstraints {
+    (boolean or MediaTrackConstraints) video = false;
+    (boolean or MediaTrackConstraints) audio = false;
+};
+
+dictionary MediaTrackConstraints : MediaTrackConstraintSet {
+    sequence<MediaTrackConstraintSet> advanced;
+};
+
+dictionary MediaTrackConstraintSet {
+    ConstrainULong width;
+    ConstrainULong height;
+    ConstrainDouble aspectRatio;
+    ConstrainDouble frameRate;
+    ConstrainDOMString facingMode;
+    ConstrainDOMString resizeMode;
+    ConstrainULong sampleRate;
+    ConstrainULong sampleSize;
+    ConstrainBoolean echoCancellation;
+    ConstrainBoolean autoGainControl;
+    ConstrainBoolean noiseSuppression;
+    ConstrainDouble latency;
+    ConstrainULong channelCount;
+    ConstrainDOMString deviceId;
+    ConstrainDOMString groupId;
+};
+
+[Exposed=Window]
+interface MediaStream : EventTarget {
+    constructor();
+    constructor(MediaStream stream);
+    constructor(sequence<MediaStreamTrack> tracks);
+    readonly attribute DOMString id;
+    sequence<MediaStreamTrack> getAudioTracks();
+    sequence<MediaStreamTrack> getVideoTracks();
+    sequence<MediaStreamTrack> getTracks();
+    MediaStreamTrack? getTrackById(DOMString trackId);
+    undefined addTrack(MediaStreamTrack track);
+    undefined removeTrack(MediaStreamTrack track);
+    MediaStream clone();
+    readonly attribute boolean active;
+    attribute EventHandler onaddtrack;
+    attribute EventHandler onremovetrack;
+};
+
+[Exposed=Window]
+interface MediaStreamTrack : EventTarget {
+    readonly attribute DOMString kind;
+    readonly attribute DOMString id;
+    readonly attribute DOMString label;
+    attribute boolean enabled;
+    readonly attribute boolean muted;
+    attribute EventHandler onmute;
+    attribute EventHandler onunmute;
+    readonly attribute MediaStreamTrackState readyState;
+    attribute EventHandler onended;
+    MediaStreamTrack clone();
+    undefined stop();
+    MediaTrackCapabilities getCapabilities();
+    MediaTrackConstraints getConstraints();
+    MediaTrackSettings getSettings();
+    Promise<undefined> applyConstraints(optional MediaTrackConstraints constraints = {});
+};
+
+enum MediaStreamTrackState {
+    ""live"",
+    ""ended""
+};
+
+dictionary MediaTrackSettings {
+    unsigned long width;
+    unsigned long height;
+    double aspectRatio;
+    double frameRate;
+    DOMString facingMode;
+    DOMString resizeMode;
+    unsigned long sampleRate;
+    unsigned long sampleSize;
+    boolean echoCancellation;
+    boolean autoGainControl;
+    boolean noiseSuppression;
+    double latency;
+    unsigned long channelCount;
+    DOMString deviceId;
+    DOMString groupId;
+};";
+
+}
