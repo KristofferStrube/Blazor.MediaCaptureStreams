@@ -6,7 +6,7 @@ The API standardizes ways to request access to local multimedia devices, such as
 *The api is still in progress of being developed.*
 
 ## Demo
-The sample project can be demoed at https://kristofferstrube.github.io/Blazor.Streams/
+The sample project can be demoed at https://kristofferstrube.github.io/Blazor.MediaCaptureStreams/
 
 On each page you can find the corresponding code for the example in the top right corner.
 
