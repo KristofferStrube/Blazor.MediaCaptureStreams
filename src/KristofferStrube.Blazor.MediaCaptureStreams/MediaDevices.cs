@@ -27,7 +27,7 @@ public class MediaDevices : EventTarget
 
     public async Task<MediaDeviceInfo[]> EnumerateDevicesAsync()
     {
-        IJSObjectReference helper = await helperTask.Value;
+        IJSObjectReference helper = await mediaCaptureStreamsHelperTask.Value;
         IJSObjectReference devices = await JSReference.InvokeAsync<IJSObjectReference>("enumerateDevices");
         int length = await helper.InvokeAsync<int>("getAttribute", devices, "length");
         return await Task.WhenAll(
@@ -40,5 +40,11 @@ public class MediaDevices : EventTarget
                     })
                 .ToArray()
         );
+    }
+
+    public async Task<MediaStream> GetUserMediaAsync(MediaStreamConstraints? constraints = null)
+    {
+        var jSInstance = await JSReference.InvokeAsync<IJSObjectReference>("getUserMedia", constraints);
+        return await MediaStream.CreateAsync(JSRuntime, jSInstance);
     }
 }

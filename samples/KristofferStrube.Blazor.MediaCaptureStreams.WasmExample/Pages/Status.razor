@@ -26,7 +26,16 @@
 
     private (int start, int end)[] supportedRows = new (int start, int end)[] {
         (0, 5),
-        (8, 8)
+        (7, 15),
+        (17, 23),
+        (48, 78),
+        (80, 81),
+        (101, 146),
+        (149, 149),
+        (151, 151),
+        (156, 160),
+        (168, 168),
+        (173, 173)
     };
 
     private const string webIDL = @"partial interface Navigator {
@@ -75,6 +84,36 @@ dictionary MediaTrackCapabilities {
     ULongRange channelCount;
     DOMString deviceId;
     DOMString groupId;
+};
+
+dictionary DoubleRange {
+    double max;
+    double min;
+};
+
+dictionary ConstrainDoubleRange : DoubleRange {
+    double exact;
+    double ideal;
+};
+
+dictionary ULongRange {
+    [Clamp] unsigned long max;
+    [Clamp] unsigned long min;
+};
+
+dictionary ConstrainULongRange : ULongRange {
+    [Clamp] unsigned long exact;
+    [Clamp] unsigned long ideal;
+};
+
+dictionary ConstrainBooleanParameters {
+    boolean exact;
+    boolean ideal;
+};
+
+dictionary ConstrainDOMStringParameters {
+    (DOMString or sequence<DOMString>) exact;
+    (DOMString or sequence<DOMString>) ideal;
 };
 
 partial interface MediaDevices {
@@ -126,6 +165,16 @@ dictionary MediaTrackConstraintSet {
     ConstrainDOMString deviceId;
     ConstrainDOMString groupId;
 };
+
+typedef ([Clamp] unsigned long or ConstrainULongRange) ConstrainULong;
+
+typedef (double or ConstrainDoubleRange) ConstrainDouble;
+
+typedef (boolean or ConstrainBooleanParameters) ConstrainBoolean;
+
+typedef (DOMString or
+         sequence<DOMString> or
+         ConstrainDOMStringParameters) ConstrainDOMString;
 
 [Exposed=Window]
 interface MediaStream : EventTarget {

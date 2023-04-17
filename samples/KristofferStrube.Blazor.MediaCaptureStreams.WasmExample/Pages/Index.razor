@@ -5,40 +5,69 @@
 
 <h2>On this page we try to load the available media devices in your browser.</h2>
 
-@if (error is {} errorMessage)
+
+@if (error is { } errorMessage)
 {
     <p style="color: red;">@errorMessage</p>
 }
+else if (mediaStream is null)
+{
+    <button class="btn bg-primary" @onclick="LoadMediaStream">Load MediaStream</button>
+}
 else
 {
-    <h3>Devices:</h3>
-    @foreach(var device in deviceList)
+    <h3>MediaStream</h3>
+    <p>
+        Active: @active<br />
+        Id: @id
+    </p>
+}
+@if (tracks is { Length: > 0 })
+{
+    <h3>Tracks:</h3>
+    @foreach (var trackInfo in tracks)
     {
+        var mediaStreamTrack = trackInfo.track;
         <div>
-            <b>@device.label</b>: @device.id
+            <b>@trackInfo.kind</b> : @trackInfo.label (@trackInfo.id): <button class="btn bg-warning" @onclick="() => RemoveAsync(mediaStreamTrack)">Stop and Remove</button>
         </div>
     }
 }
 
 @code {
-    private List<(string label, string id)> deviceList = new();
+    private MediaStream? mediaStream;
+    private bool active;
+    private string id = string.Empty;
+    private (MediaStreamTrackKind kind, string label, string id, MediaStreamTrack track)[]? tracks;
     private string? error;
 
-    protected override async Task OnInitializedAsync()
+    async Task LoadMediaStream()
     {
         try
         {
             var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
-            var devices = await mediaDevices.EnumerateDevicesAsync();
-            deviceList.Clear();
-            foreach (var device in devices)
-            {
-                deviceList.Add((await device.GetLabelAsync(), await device.GetDeviceIdAsync()));
-            }
+            mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = true, Audio = true });
+            id = await mediaStream.GetIdAsync();
+            await LoadTracksAsync();
         }
         catch
         {
             error = "Could not load media devices";
         }
+    }
+
+    async Task LoadTracksAsync()
+    {
+        if (mediaStream is null) return;
+        tracks = await Task.WhenAll((await mediaStream.GetTracksAsync()).Select(async track => (kind: await track.GetKindAsync(), label: await track.GetLabelAsync(), id: await track.GetIdAsync(), track)));
+        active = await mediaStream.GetActiveAsync();
+    }
+
+    async Task RemoveAsync(MediaStreamTrack track)
+    {
+        if (mediaStream is null) return;
+        await track.StopAsync();
+        await mediaStream.RemoveTrackAsync(track);
+        await LoadTracksAsync();
     }
 }
