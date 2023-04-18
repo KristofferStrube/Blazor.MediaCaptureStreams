@@ -35,6 +35,7 @@ else
             };
             mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints } );
             StateHasChanged();
+            // We don't have a wrapper for HtmlMediaElement's yet so we use simple JSInterop for this part.
             var htmlMediaElement = await JSRuntime.InvokeAsync<IJSObjectReference>("getReference", videoElement);
             await JSRuntime.InvokeVoidAsync("setAttribute", htmlMediaElement, "srcObject", mediaStream.JSReference);
         }
