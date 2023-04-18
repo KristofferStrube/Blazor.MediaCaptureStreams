@@ -3,7 +3,8 @@
 public enum MediaStreamTrackKind
 {
     Audio,
-    Video
+    Video,
+    Main
 }
 
 public static class MediaStreamTrackKindExtensions
@@ -12,6 +13,7 @@ public static class MediaStreamTrackKindExtensions
     {
         "audio" => MediaStreamTrackKind.Audio,
         "video" => MediaStreamTrackKind.Video,
+        "main" => MediaStreamTrackKind.Main,
         _ => throw new ArgumentException($"Value '{value}' was not a valid {nameof(MediaStreamTrackKind)}")
     };
 }
