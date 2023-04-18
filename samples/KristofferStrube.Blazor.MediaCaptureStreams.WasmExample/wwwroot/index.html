@@ -40,6 +40,10 @@
             window.location.replace(window.location.origin + window.location.pathname + '/' + window.location.search);
         }
     </script>
+    <script>
+        function getReference(element) { return element; }
+        function setAttribute(element, attribute, value) { element[attribute] = value; }
+    </script>
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png" />

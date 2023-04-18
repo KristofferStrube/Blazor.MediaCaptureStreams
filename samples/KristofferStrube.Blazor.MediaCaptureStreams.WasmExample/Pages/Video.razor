@@ -1,0 +1,42 @@
+﻿@page "/video"
+@inject IMediaDevicesService MediaDevicesService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Media Capture and Streams - Load Devices</PageTitle>
+
+<h2>Here we open a video track and show it in a <code>video</code> tag.</h2>
+
+@if (error is { } errorMessage)
+{
+    <p style="color: red;">@errorMessage</p>
+}
+else if (mediaStream is null)
+{
+    <button class="btn btn-primary" @onclick="LoadMediaStream">Load Camera</button>
+}
+else
+{
+    <video @ref="videoElement" width="100%" height="500" autoplay controls></video>
+}
+
+@code {
+    private MediaStream? mediaStream;
+    private string? error;
+    private ElementReference videoElement;
+
+    async Task LoadMediaStream()
+    {
+        try
+        {
+            var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
+            mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = true });
+            StateHasChanged();
+            var htmlMediaElement = await JSRuntime.InvokeAsync<IJSObjectReference>("getReference", videoElement);
+            await JSRuntime.InvokeVoidAsync("setAttribute", htmlMediaElement, "srcObject", mediaStream.JSReference);
+        }
+        catch
+        {
+            error = "Could not load video track.";
+        }
+    }
+}
