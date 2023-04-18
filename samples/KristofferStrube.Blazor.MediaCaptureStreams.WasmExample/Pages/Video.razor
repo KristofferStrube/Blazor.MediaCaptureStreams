@@ -29,7 +29,11 @@ else
         try
         {
             var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
-            mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = true });
+            var mediaTrackConstraints = new MediaTrackConstraints()
+            {
+                AspectRatio = 4.0/3.0,
+            };
+            mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints } );
             StateHasChanged();
             var htmlMediaElement = await JSRuntime.InvokeAsync<IJSObjectReference>("getReference", videoElement);
             await JSRuntime.InvokeVoidAsync("setAttribute", htmlMediaElement, "srcObject", mediaStream.JSReference);

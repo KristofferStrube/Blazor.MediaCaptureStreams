@@ -1,7 +1,9 @@
 ﻿using KristofferStrube.Blazor.MediaCaptureStreams.UnionTypes;
+using System.Text.Json.Serialization;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
+[JsonConverter(typeof(UnionTypeJsonConverter<ConstrainULong>))]
 public class ConstrainULong : UnionType
 {
     public ConstrainULong(ulong value) : base(value) { }

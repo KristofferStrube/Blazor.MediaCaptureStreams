@@ -2,7 +2,7 @@
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams.UnionTypes;
 
-[JsonConverter(typeof(UnionTypeJsonConverter))]
+[JsonConverter(typeof(UnionTypeJsonConverter<UnionType>))]
 public class UnionType
 {
     protected UnionType(object value)

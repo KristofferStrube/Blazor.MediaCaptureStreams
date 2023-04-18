@@ -1,8 +1,10 @@
 ﻿using KristofferStrube.Blazor.MediaCaptureStreams.Constrains;
 using KristofferStrube.Blazor.MediaCaptureStreams.UnionTypes;
+using System.Text.Json.Serialization;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
+[JsonConverter(typeof(UnionTypeJsonConverter<ConstrainDomString>))]
 public class ConstrainDomString : UnionType
 {
     public ConstrainDomString(string value) : base(value) { }
