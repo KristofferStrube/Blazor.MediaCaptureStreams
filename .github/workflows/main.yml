@@ -28,9 +28,9 @@ jobs:
         # Publish the website
         - name: GitHub Pages action
           if: ${{ github.ref == 'refs/heads/main' }} # Publish only when the push is on main
-          uses: peaceiris/actions-gh-pages@v3.6.1
+          uses: peaceiris/actions-gh-pages@v3
           with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+            github_token: ${{ secrets.PUBLISH_TOKEN }}
             publish_branch: gh-pages
             publish_dir: build/wwwroot
             allow_empty_commit: false
