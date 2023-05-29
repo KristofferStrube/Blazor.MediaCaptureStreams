@@ -43,18 +43,25 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var devices = await MediaDevicesService.GetMediaDevicesAsync();
-        var deviceInfos = await devices.EnumerateDevicesAsync();
-        foreach (MediaDeviceInfo info in deviceInfos)
+        try
         {
-            deviceOptions.Add(
-                (
-                    label: await info.GetLabelAsync(),
-                    kind: await info.GetKindAsync(),
-                    id: await info.GetDeviceIdAsync(),
-                    group: await info.GetGroupIdAsync()
-                )
-            );
+            var devices = await MediaDevicesService.GetMediaDevicesAsync();
+            var deviceInfos = await devices.EnumerateDevicesAsync();
+            foreach (MediaDeviceInfo info in deviceInfos)
+            {
+                deviceOptions.Add(
+                    (
+                        label: await info.GetLabelAsync(),
+                        kind: await info.GetKindAsync(),
+                        id: await info.GetDeviceIdAsync(),
+                        group: await info.GetGroupIdAsync()
+                    )
+                );
+            }
+        }
+        catch
+        {
+            error = "Could not load video track.";
         }
     }
 }
