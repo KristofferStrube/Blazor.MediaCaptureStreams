@@ -37,17 +37,22 @@ public class MediaStreamTrack : EventTarget
         return await helper.InvokeAsync<string>("getAttribute", JSReference, "label");
     }
 
+    public async Task StopAsync()
+    {
+        await JSReference.InvokeVoidAsync("stop");
+    }
+
+    public async Task<MediaTrackCapabilities> GetCapabilitiesAsync()
+    {
+        return await JSReference.InvokeAsync<MediaTrackCapabilities>("getCapabilities");
+    }
+
     public async Task<MediaTrackConstraints> GetConstraintsAsync()
     {
         IJSObjectReference result = await JSReference.InvokeAsync<IJSObjectReference>("getConstraints");
         var newMediaTrackConstraints = new MediaTrackConstraints();
         await MediaTrackConstraints.HydrateMediaTrackConstraints(newMediaTrackConstraints, JSRuntime, result);
         return newMediaTrackConstraints;
-    }
-
-    public async Task StopAsync()
-    {
-        await JSReference.InvokeVoidAsync("stop");
     }
 
     public async Task<MediaTrackSettings> GetSettingsAsync()

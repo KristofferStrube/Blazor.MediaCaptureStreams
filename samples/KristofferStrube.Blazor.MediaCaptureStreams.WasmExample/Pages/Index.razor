@@ -31,7 +31,7 @@ else
         <div class="my-3">
             <h4><b>@trackInfo.kind</b>: @trackInfo.label</h4>
             id: <u>@trackInfo.id</u>
-            <div class="m-1 p-1 border border-secondary rounded">
+            <div class="my-1 p-1 border border-secondary rounded">
                 <h5>Constraints:</h5>
                 @if (trackInfo.constaints?.Width is not null)
                 {
@@ -214,6 +214,10 @@ else
                     </div>
                 }
             </div>
+            <div class="my-1 p-1 border border-secondary rounded">
+                <h5>Capabilites:</h5>
+                <textarea style="height:20vh; width: 100%;">@System.Text.Json.JsonSerializer.Serialize(trackInfo.capabilities, new System.Text.Json.JsonSerializerOptions() { WriteIndented = true })</textarea>
+            </div>
             <button class="btn bg-warning" @onclick="() => RemoveAsync(mediaStreamTrack)">Stop and Remove</button>
         </div>
     }
@@ -223,7 +227,7 @@ else
     private MediaStream? mediaStream;
     private bool active;
     private string id = string.Empty;
-    private (MediaStreamTrackKind kind, string label, string id, MediaTrackConstraints constaints, MediaStreamTrack track)[]? tracks;
+    private (MediaStreamTrackKind kind, string label, string id, MediaTrackCapabilities capabilities, MediaTrackConstraints constaints, MediaStreamTrack track)[]? tracks;
     private string? error;
 
     async Task LoadMediaStream()
@@ -234,7 +238,7 @@ else
                 Video = new MediaTrackConstraints()
                 {
                     Advanced = new[]
-                                    {
+                                        {
                         new MediaTrackConstraintSet()
                         {
                             AspectRatio = 1 / 6
@@ -259,6 +263,11 @@ else
                         Ideal = new[] { VideoResizeMode.CropAndScale, VideoResizeMode.None },
                         Exact = new[] { VideoResizeMode.CropAndScale }
                     },
+                    DeviceId = "Some device",
+                    GroupId = ""
+                },
+                Audio = new MediaTrackConstraints()
+                {
                     SampleRate = 10,
                     SampleSize = new ConstrainULongRange()
                     {
@@ -275,10 +284,7 @@ else
                     NoiseSuppression = false,
                     Latency = 2.2,
                     ChannelCount = 2,
-                    DeviceId = "Some device",
-                    GroupId = ""
-                },
-                Audio = true
+                }
             };
         mediaStream = await mediaDevices.GetUserMediaAsync(mediaConstraints);
         id = await mediaStream.GetIdAsync();
@@ -295,6 +301,7 @@ else
                         kind: await track.GetKindAsync(),
                         label: await track.GetLabelAsync(),
                         id: await track.GetIdAsync(),
+                        capabilities: await track.GetCapabilitiesAsync(),
                         constraints: await track.GetConstraintsAsync(),
                         track: track
                     )
