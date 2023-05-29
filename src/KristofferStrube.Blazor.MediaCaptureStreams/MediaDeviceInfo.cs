@@ -26,7 +26,7 @@ public class MediaDeviceInfo : BaseJSWrapper
     public async Task<MediaDeviceKind> GetKindAsync()
     {
         IJSObjectReference helper = await helperTask.Value;
-        string kind = await helper.InvokeAsync<string>("getAttribute", JSReference, "label");
+        string kind = await helper.InvokeAsync<string>("getAttribute", JSReference, "kind");
         return MediaDeviceKindExtensions.ParseMediaDeviceKind(kind);
     }
 

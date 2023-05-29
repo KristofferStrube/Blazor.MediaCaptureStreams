@@ -1,5 +1,6 @@
 ﻿using KristofferStrube.Blazor.DOM;
 using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
+using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
@@ -34,8 +35,10 @@ public class MediaDevices : EventTarget
                 .Range(0, length)
                 .Select(async i =>
                     {
-                        IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", devices, i);
-                        return await MediaDeviceInfo.CreateAsync(JSRuntime, jSInstance);
+                        var reference = new ValueReference(JSRuntime, devices, i);
+                        reference.ValueMapper["mediadeviceinfo"] = async () => await MediaDeviceInfo.CreateAsync(JSRuntime, await reference.GetValueAsync<IJSObjectReference>());
+                        reference.ValueMapper["inputdeviceinfo"] = async () => await InputDeviceInfo.CreateAsync(JSRuntime, await reference.GetValueAsync<IJSObjectReference>());
+                        return (MediaDeviceInfo)(await reference.GetValueAsync())!;
                     })
                 .ToArray()
         );
