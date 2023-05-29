@@ -1,0 +1,21 @@
+﻿@if (ConstrainULongRange.Min is not 0)
+{
+    <code>min: @ConstrainULongRange.Min</code>
+}
+@if (ConstrainULongRange.Max is not 0)
+{
+    <code>max: @ConstrainULongRange.Max</code>
+}
+@if (ConstrainULongRange.Ideal is not 0)
+{
+    <code>ideal: @ConstrainULongRange.Ideal</code>
+}
+@if (ConstrainULongRange.Exact is not 0)
+{
+    <code>exact: @ConstrainULongRange.Exact</code>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ConstrainULongRange ConstrainULongRange { get; set; } = default!;
+}

@@ -1,0 +1,32 @@
+﻿@if (ConstrainVideoResizeMode.Value is VideoResizeMode { } videoFacingMode)
+{
+    <code>@videoFacingMode</code>
+}
+else if (ConstrainVideoResizeMode.Value is VideoResizeMode[] { } videoFacingModeArray)
+{
+    <code>@string.Join(", ", videoFacingModeArray)</code>
+}
+else if (ConstrainVideoResizeMode.Value is ConstrainVideoResizeModeParameters { } constrainVideoResizeModeParameters)
+{
+    if (constrainVideoResizeModeParameters.Ideal?.Value is VideoResizeMode { } ideal)
+    {
+        <code>ideal: @ideal</code>
+    }
+    else if (constrainVideoResizeModeParameters.Ideal?.Value is VideoResizeMode[] { } idealArray)
+    {
+        <code>ideal: @string.Join(", ", idealArray)</code>
+    }
+    if (constrainVideoResizeModeParameters.Exact?.Value is VideoResizeMode { } exact)
+    {
+        <code>exact: @exact</code>
+    }
+    else if (constrainVideoResizeModeParameters.Exact?.Value is VideoResizeMode[] { } exactArray)
+    {
+        <code>exact: @string.Join(", ", exactArray)</code>
+    }
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ConstrainVideoResizeMode ConstrainVideoResizeMode { get; set; } = default!;
+}

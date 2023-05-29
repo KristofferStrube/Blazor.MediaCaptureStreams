@@ -8,10 +8,15 @@ public class ConstrainULong : UnionType
 {
     public ConstrainULong(ulong value) : base(value) { }
     public ConstrainULong(ConstrainULongRange value) : base(value) { }
+    internal ConstrainULong(object value) : base(value) { }
 
     public static implicit operator ConstrainULong(ulong value)
-        => new(value);
+    {
+        return new(value);
+    }
 
     public static implicit operator ConstrainULong(ConstrainULongRange value)
-        => new(value);
+    {
+        return new(value);
+    }
 }

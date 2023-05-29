@@ -18,8 +18,8 @@ else
 {
     <h3>MediaStream</h3>
     <p>
-        Active: @active<br />
-        Id: @id
+        Active: <span class="badge @(active ? "bg-success" : "bg-danger")">@active</span><br />
+        Id: <u>@id</u>
     </p>
 }
 @if (tracks is { Length: > 0 })
@@ -28,8 +28,193 @@ else
     @foreach (var trackInfo in tracks)
     {
         var mediaStreamTrack = trackInfo.track;
-        <div>
-            <b>@trackInfo.kind</b> : @trackInfo.label (@trackInfo.id): <button class="btn bg-warning" @onclick="() => RemoveAsync(mediaStreamTrack)">Stop and Remove</button>
+        <div class="my-3">
+            <h4><b>@trackInfo.kind</b>: @trackInfo.label</h4>
+            id: <u>@trackInfo.id</u>
+            <div class="m-1 p-1 border border-secondary rounded">
+                <h5>Constraints:</h5>
+                @if (trackInfo.constaints?.Width is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            width
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainULongPresenter ConstrainULong="trackInfo.constaints.Width" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.Height is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            height
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainULongPresenter ConstrainULong="trackInfo.constaints.Height" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.AspectRatio is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            aspect ratio
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainDoublePresenter ConstrainDouble="trackInfo.constaints.AspectRatio" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.FrameRate is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            frame rate
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainDoublePresenter ConstrainDouble="trackInfo.constaints.FrameRate" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.FacingMode is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            facing mode
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainVideoFacingModePresenter ConstrainVideoFacingMode="trackInfo.constaints.FacingMode" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.ResizeMode is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            resize mode
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainVideoResizeModePresenter ConstrainVideoResizeMode="trackInfo.constaints.ResizeMode" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.SampleRate is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            sample rate
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainULongPresenter ConstrainULong="trackInfo.constaints.SampleRate" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.SampleSize is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            sample size
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainULongPresenter ConstrainULong="trackInfo.constaints.SampleSize" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.EchoCancellation is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            echo cancellation
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainBooleanPresenter ConstrainBoolean="trackInfo.constaints.EchoCancellation" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.AutoGainControl is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            auto gain control
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainBooleanPresenter ConstrainBoolean="trackInfo.constaints.AutoGainControl" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.NoiseSuppression is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            noise suppression
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainBooleanPresenter ConstrainBoolean="trackInfo.constaints.NoiseSuppression" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.Latency is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            latency
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainDoublePresenter ConstrainDouble="trackInfo.constaints.Latency" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.ChannelCount is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            channel count
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainULongPresenter ConstrainULong="trackInfo.constaints.ChannelCount" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.DeviceId is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            device id
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainStringPresenter ConstrainDomString="trackInfo.constaints.DeviceId" />
+                        </div>
+                    </div>
+                }
+                @if (trackInfo.constaints?.GroupId is not null)
+                {
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            group id
+                        </div>
+                        <div class="col d-flex flex-column">
+                            <ConstrainStringPresenter ConstrainDomString="trackInfo.constaints.GroupId" />
+                        </div>
+                    </div>
+                }
+            </div>
+            <button class="btn bg-warning" @onclick="() => RemoveAsync(mediaStreamTrack)">Stop and Remove</button>
         </div>
     }
 }
@@ -38,28 +223,83 @@ else
     private MediaStream? mediaStream;
     private bool active;
     private string id = string.Empty;
-    private (MediaStreamTrackKind kind, string label, string id, MediaStreamTrack track)[]? tracks;
+    private (MediaStreamTrackKind kind, string label, string id, MediaTrackConstraints constaints, MediaStreamTrack track)[]? tracks;
     private string? error;
 
     async Task LoadMediaStream()
     {
-        try
-        {
-            var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
-            mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = true, Audio = true });
-            id = await mediaStream.GetIdAsync();
-            await LoadTracksAsync();
-        }
-        catch
-        {
-            error = "Could not load media devices";
-        }
+        var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
+        var mediaConstraints = new MediaStreamConstraints()
+            {
+                Video = new MediaTrackConstraints()
+                {
+                    Advanced = new[]
+                                    {
+                        new MediaTrackConstraintSet()
+                        {
+                            AspectRatio = 1 / 6
+                        }
+                    },
+                    Width = new ConstrainULongRange()
+                    {
+                        Min = 100,
+                        Max = 2000,
+                        Ideal = 1920
+                    },
+                    Height = 1080,
+                    AspectRatio = new ConstrainDoubleRange()
+                    {
+                        Min = 3.0 / 4.0,
+                        Max = 21.0 / 9.0
+                    },
+                    FrameRate = 30,
+                    FacingMode = VideoFacingMode.User,
+                    ResizeMode = new ConstrainVideoResizeModeParameters()
+                    {
+                        Ideal = new[] { VideoResizeMode.CropAndScale, VideoResizeMode.None },
+                        Exact = new[] { VideoResizeMode.CropAndScale }
+                    },
+                    SampleRate = 10,
+                    SampleSize = new ConstrainULongRange()
+                    {
+                        Ideal = 100,
+                        Max = 200,
+                        Min = 10
+                    },
+                    EchoCancellation = true,
+                    AutoGainControl = new ConstrainBooleanParameters()
+                    {
+                        Ideal = true,
+                        Exact = false
+                    },
+                    NoiseSuppression = false,
+                    Latency = 2.2,
+                    ChannelCount = 2,
+                    DeviceId = "Some device",
+                    GroupId = ""
+                },
+                Audio = true
+            };
+        mediaStream = await mediaDevices.GetUserMediaAsync(mediaConstraints);
+        id = await mediaStream.GetIdAsync();
+        await LoadTracksAsync();
     }
 
     async Task LoadTracksAsync()
     {
         if (mediaStream is null) return;
-        tracks = await Task.WhenAll((await mediaStream.GetTracksAsync()).Select(async track => (kind: await track.GetKindAsync(), label: await track.GetLabelAsync(), id: await track.GetIdAsync(), track)));
+        tracks = await Task.WhenAll(
+            (await mediaStream.GetTracksAsync())
+                .Select(async track =>
+                    (
+                        kind: await track.GetKindAsync(),
+                        label: await track.GetLabelAsync(),
+                        id: await track.GetIdAsync(),
+                        constraints: await track.GetConstraintsAsync(),
+                        track: track
+                    )
+                )
+        );
         active = await mediaStream.GetActiveAsync();
     }
 

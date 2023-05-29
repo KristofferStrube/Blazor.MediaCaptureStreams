@@ -1,6 +1,5 @@
 ﻿using KristofferStrube.Blazor.DOM;
 using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
@@ -35,16 +34,21 @@ public class MediaDevices : EventTarget
                 .Range(0, length)
                 .Select(async i =>
                     {
-                        var jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", devices, i);
+                        IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", devices, i);
                         return await MediaDeviceInfo.CreateAsync(JSRuntime, jSInstance);
                     })
                 .ToArray()
         );
     }
 
+    public async Task<MediaTrackSupportedConstraints> GetSupportedConstraintsAsync()
+    {
+        return await JSReference.InvokeAsync<MediaTrackSupportedConstraints>("getSupportedConstraints");
+    }
+
     public async Task<MediaStream> GetUserMediaAsync(MediaStreamConstraints? constraints = null)
     {
-        var jSInstance = await JSReference.InvokeAsync<IJSObjectReference>("getUserMedia", constraints);
+        IJSObjectReference jSInstance = await JSReference.InvokeAsync<IJSObjectReference>("getUserMedia", constraints);
         return await MediaStream.CreateAsync(JSRuntime, jSInstance);
     }
 }

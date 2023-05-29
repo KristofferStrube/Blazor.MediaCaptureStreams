@@ -1,0 +1,24 @@
+﻿@if (ConstrainBoolean.Value is bool { } boolValue)
+{
+    <code>@boolValue</code>
+}
+else if (ConstrainBoolean.Value is ConstrainBooleanParameters { } constrainBooleanParameters)
+{
+    if (constrainBooleanParameters.Ideal is not null)
+    {
+        <code>ideal: @constrainBooleanParameters.Ideal</code>
+    }
+    if (constrainBooleanParameters.Exact is not null)
+    {
+        <code>exact: @constrainBooleanParameters.Exact</code>
+    }
+}
+else
+{
+    <code>null</code>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ConstrainBoolean ConstrainBoolean { get; set; } = default!;
+}

@@ -1,12 +1,14 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace KristofferStrube.Blazor.MediaCaptureStreams.Constrains;
+namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
 public class ConstrainBooleanParameters
 {
     [JsonPropertyName("exact")]
-    public bool Exact { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Exact { get; set; }
 
     [JsonPropertyName("ideal")]
-    public bool Ideal { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Ideal { get; set; }
 }

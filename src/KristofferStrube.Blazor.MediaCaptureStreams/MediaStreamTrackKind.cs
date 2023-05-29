@@ -9,11 +9,14 @@ public enum MediaStreamTrackKind
 
 public static class MediaStreamTrackKindExtensions
 {
-    public static MediaStreamTrackKind ParseMediaStreamTrackKind(string value) => value switch
+    public static MediaStreamTrackKind ParseMediaStreamTrackKind(string value)
     {
-        "audio" => MediaStreamTrackKind.Audio,
-        "video" => MediaStreamTrackKind.Video,
-        "main" => MediaStreamTrackKind.Main,
-        _ => throw new ArgumentException($"Value '{value}' was not a valid {nameof(MediaStreamTrackKind)}")
-    };
+        return value switch
+        {
+            "audio" => MediaStreamTrackKind.Audio,
+            "video" => MediaStreamTrackKind.Video,
+            "main" => MediaStreamTrackKind.Main,
+            _ => throw new ArgumentException($"Value '{value}' was not a valid {nameof(MediaStreamTrackKind)}")
+        };
+    }
 }

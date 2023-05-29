@@ -8,10 +8,15 @@ public class ConstrainDouble : UnionType
 {
     public ConstrainDouble(double value) : base(value) { }
     public ConstrainDouble(ConstrainDoubleRange value) : base(value) { }
+    internal ConstrainDouble(object value) : base(value) { }
 
     public static implicit operator ConstrainDouble(double value)
-        => new(value);
+    {
+        return new(value);
+    }
 
     public static implicit operator ConstrainDouble(ConstrainDoubleRange value)
-        => new(value);
+    {
+        return new(value);
+    }
 }

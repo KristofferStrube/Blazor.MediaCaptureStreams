@@ -1,0 +1,17 @@
+﻿@if (ConstrainDouble.Value is double { } doubleValue)
+{
+    <code>@doubleValue</code>
+}
+else if (ConstrainDouble.Value is ConstrainDoubleRange { } constrainDoubleRange)
+{
+    <ConstrainDoubleRangePresenter ConstrainDoubleRange="constrainDoubleRange" />
+}
+else
+{
+    <code>null</code>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ConstrainDouble ConstrainDouble { get; set; } = default!;
+}

@@ -1,0 +1,24 @@
+﻿@if (ConstrainVideoFacingMode.Value is VideoFacingMode { } videoFacingMode)
+{
+    <code>@videoFacingMode</code>
+}
+else if (ConstrainVideoFacingMode.Value is VideoFacingMode[] { } videoFacingModeArray)
+{
+    <code>@string.Join(", ", videoFacingModeArray)</code>
+}
+else if (ConstrainVideoFacingMode.Value is ConstrainVideoFacingModeParameters { } constrainVideoFacingModeParameters)
+{
+    if (constrainVideoFacingModeParameters.Ideal is not null)
+    {
+        <code>ideal: @constrainVideoFacingModeParameters.Ideal</code>
+    }
+    if (constrainVideoFacingModeParameters.Exact is not null)
+    {
+        <code>exact: @constrainVideoFacingModeParameters.Exact</code>
+    }
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ConstrainVideoFacingMode ConstrainVideoFacingMode { get; set; } = default!;
+}

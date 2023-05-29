@@ -31,7 +31,7 @@ else
             var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
             var mediaTrackConstraints = new MediaTrackConstraints()
             {
-                AspectRatio = 4.0/3.0,
+                AspectRatio = 9.0/21.0,
             };
             mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints } );
             StateHasChanged();

@@ -1,0 +1,21 @@
+﻿@if (ConstrainDoubleRange.Min is not 0)
+{
+    <code>min: @ConstrainDoubleRange.Min</code>
+}
+@if (ConstrainDoubleRange.Max is not 0)
+{
+    <code>max: @ConstrainDoubleRange.Max</code>
+}
+@if (ConstrainDoubleRange.Ideal is not 0)
+{
+    <code>ideal: @ConstrainDoubleRange.Ideal</code>
+}
+@if (ConstrainDoubleRange.Exact is not 0)
+{
+    <code>exact: @ConstrainDoubleRange.Exact</code>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ConstrainDoubleRange ConstrainDoubleRange { get; set; } = default!;
+}

@@ -1,13 +1,12 @@
-﻿using KristofferStrube.Blazor.MediaCaptureStreams.UnionTypes;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
 public class MediaStreamConstraints
 {
     [JsonPropertyName("video")]
-    public BooleanOrMediaTrackConstraints Video { get; set; } = false;
+    public BoolOrMediaTrackConstraints Video { get; set; } = false;
 
     [JsonPropertyName("audio")]
-    public BooleanOrMediaTrackConstraints Audio { get; set; } = false;
+    public BoolOrMediaTrackConstraints Audio { get; set; } = false;
 }

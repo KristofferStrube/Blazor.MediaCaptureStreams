@@ -1,0 +1,17 @@
+﻿@if (ConstrainULong.Value is ulong { } ulongValue)
+{
+    <code>@ulongValue</code>
+}
+else if (ConstrainULong.Value is ConstrainULongRange { } constrainULongRange)
+{
+    <ConstrainULongRangePresenter ConstrainULongRange="constrainULongRange" />
+}
+else
+{
+    <code>null</code>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ConstrainULong ConstrainULong { get; set; } = default!;
+}

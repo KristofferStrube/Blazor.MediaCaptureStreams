@@ -1,5 +1,4 @@
-﻿using KristofferStrube.Blazor.MediaCaptureStreams.Constrains;
-using KristofferStrube.Blazor.MediaCaptureStreams.UnionTypes;
+﻿using KristofferStrube.Blazor.MediaCaptureStreams.UnionTypes;
 using System.Text.Json.Serialization;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
@@ -9,10 +8,15 @@ public class ConstrainBoolean : UnionType
 {
     public ConstrainBoolean(bool value) : base(value) { }
     public ConstrainBoolean(ConstrainBooleanParameters value) : base(value) { }
+    internal ConstrainBoolean(object value) : base(value) { }
 
     public static implicit operator ConstrainBoolean(bool value)
-        => new(value);
+    {
+        return new(value);
+    }
 
     public static implicit operator ConstrainBoolean(ConstrainBooleanParameters value)
-        => new(value);
+    {
+        return new(value);
+    }
 }

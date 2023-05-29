@@ -8,7 +8,9 @@ public class UnionType
     protected UnionType(object value)
     {
         Value = value;
+        Type = value.GetType();
     }
 
     public object Value { get; init; }
+    public Type Type { get; init; }
 }

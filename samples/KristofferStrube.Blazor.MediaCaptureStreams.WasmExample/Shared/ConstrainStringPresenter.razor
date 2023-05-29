@@ -1,0 +1,35 @@
+﻿@if (ConstrainDomString.Value is string { } stringValue)
+{
+    if (stringValue is "")
+    {
+        <code>&lt;empty string&gt;</code>
+    }
+    else
+    {
+        <code>@stringValue</code>
+    }
+}
+else @if (ConstrainDomString.Value is string[] { } stringValues)
+{
+    <code>@string.Join(", ", stringValues)</code>
+}
+else if (ConstrainDomString.Value is ConstrainDOMStringParameters { } constrainDOMStringParameters)
+{
+    if (constrainDOMStringParameters.Ideal is not null)
+    {
+        <code>ideal: @constrainDOMStringParameters.Ideal</code>
+    }
+    if (constrainDOMStringParameters.Exact is not null)
+    {
+        <code>exact: @constrainDOMStringParameters.Exact</code>
+    }
+}
+else
+{
+    <code>null</code>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ConstrainDomString ConstrainDomString { get; set; } = default!;
+}

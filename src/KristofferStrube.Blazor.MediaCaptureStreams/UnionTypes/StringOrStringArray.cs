@@ -10,8 +10,12 @@ public class StringOrStringArray : UnionType
     public StringOrStringArray(string[] values) : base(values) { }
 
     public static implicit operator StringOrStringArray(string value)
-        => new(value);
+    {
+        return new(value);
+    }
 
     public static implicit operator StringOrStringArray(string[] values)
-        => new(values);
+    {
+        return new(values);
+    }
 }

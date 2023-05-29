@@ -13,24 +13,24 @@ public class MediaStream : EventTarget
         return Task.FromResult(new MediaStream(jSRuntime, jSReference));
     }
 
-    public new static async Task<MediaStream> CreateAsync(IJSRuntime jSRuntime)
+    public static new async Task<MediaStream> CreateAsync(IJSRuntime jSRuntime)
     {
-        var helper = await jSRuntime.GetHelperAsync();
-        var jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructMediaStream");
+        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructMediaStream");
         return new MediaStream(jSRuntime, jSInstance);
     }
 
     public static async Task<MediaStream> CreateAsync(IJSRuntime jSRuntime, MediaStream stream)
     {
-        var helper = await jSRuntime.GetHelperAsync();
-        var jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructMediaStreamFromStreamOrTracks", stream.JSReference);
+        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructMediaStreamFromStreamOrTracks", stream.JSReference);
         return new MediaStream(jSRuntime, jSInstance);
     }
 
     public static async Task<MediaStream> CreateAsync(IJSRuntime jSRuntime, params MediaStreamTrack[] tracks)
     {
-        var helper = await jSRuntime.GetHelperAsync();
-        var jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructMediaStreamFromStreamOrTracks", tracks.Select(track => track.JSReference).ToArray());
+        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
+        IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructMediaStreamFromStreamOrTracks", tracks.Select(track => track.JSReference).ToArray());
         return new MediaStream(jSRuntime, jSInstance);
     }
 
@@ -41,7 +41,7 @@ public class MediaStream : EventTarget
 
     public async Task<string> GetIdAsync()
     {
-        var helper = await mediaCaptureStreamsHelperTask.Value;
+        IJSObjectReference helper = await mediaCaptureStreamsHelperTask.Value;
         return await helper.InvokeAsync<string>("getAttribute", JSReference, "id");
     }
 
@@ -55,7 +55,7 @@ public class MediaStream : EventTarget
                 .Range(0, length)
                 .Select(async i =>
                 {
-                    var jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", audioTracks, i);
+                    IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", audioTracks, i);
                     return await MediaStreamTrack.CreateAsync(JSRuntime, jSInstance);
                 })
                 .ToArray()
@@ -72,7 +72,7 @@ public class MediaStream : EventTarget
                 .Range(0, length)
                 .Select(async i =>
                 {
-                    var jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", audioTracks, i);
+                    IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", audioTracks, i);
                     return await MediaStreamTrack.CreateAsync(JSRuntime, jSInstance);
                 })
                 .ToArray()
@@ -89,7 +89,7 @@ public class MediaStream : EventTarget
                 .Range(0, length)
                 .Select(async i =>
                 {
-                    var jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", audioTracks, i);
+                    IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", audioTracks, i);
                     return await MediaStreamTrack.CreateAsync(JSRuntime, jSInstance);
                 })
                 .ToArray()

@@ -19,26 +19,26 @@ public class MediaDeviceInfo : BaseJSWrapper
 
     public async Task<string> GetDeviceIdAsync()
     {
-        var helper = await helperTask.Value;
+        IJSObjectReference helper = await helperTask.Value;
         return await helper.InvokeAsync<string>("getAttribute", JSReference, "deviceId");
     }
 
     public async Task<MediaDeviceKind> GetKindAsync()
     {
-        var helper = await helperTask.Value;
-        var kind = await helper.InvokeAsync<string>("getAttribute", JSReference, "label");
+        IJSObjectReference helper = await helperTask.Value;
+        string kind = await helper.InvokeAsync<string>("getAttribute", JSReference, "label");
         return MediaDeviceKindExtensions.ParseMediaDeviceKind(kind);
     }
 
     public async Task<string> GetLabelAsync()
     {
-        var helper = await helperTask.Value;
+        IJSObjectReference helper = await helperTask.Value;
         return await helper.InvokeAsync<string>("getAttribute", JSReference, "label");
     }
 
     public async Task<string> GetGroupIdAsync()
     {
-        var helper = await helperTask.Value;
+        IJSObjectReference helper = await helperTask.Value;
         return await helper.InvokeAsync<string>("getAttribute", JSReference, "groupId");
     }
 }

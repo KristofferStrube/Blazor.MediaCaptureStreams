@@ -1,6 +1,4 @@
-﻿using Microsoft.JSInterop;
-
-namespace KristofferStrube.Blazor.MediaCaptureStreams;
+﻿namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
 public interface IMediaDevicesService
 {

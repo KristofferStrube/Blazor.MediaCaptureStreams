@@ -20,25 +20,43 @@ public class MediaStreamTrack : EventTarget
 
     public async Task<MediaStreamTrackKind> GetKindAsync()
     {
-        var helper = await mediaCaptureStreamsHelperTask.Value;
-        var kind = await helper.InvokeAsync<string>("getAttribute", JSReference, "kind");
+        IJSObjectReference helper = await mediaCaptureStreamsHelperTask.Value;
+        string kind = await helper.InvokeAsync<string>("getAttribute", JSReference, "kind");
         return MediaStreamTrackKindExtensions.ParseMediaStreamTrackKind(kind);
     }
 
     public async Task<string> GetIdAsync()
     {
-        var helper = await mediaCaptureStreamsHelperTask.Value;
+        IJSObjectReference helper = await mediaCaptureStreamsHelperTask.Value;
         return await helper.InvokeAsync<string>("getAttribute", JSReference, "id");
     }
 
     public async Task<string> GetLabelAsync()
     {
-        var helper = await mediaCaptureStreamsHelperTask.Value;
+        IJSObjectReference helper = await mediaCaptureStreamsHelperTask.Value;
         return await helper.InvokeAsync<string>("getAttribute", JSReference, "label");
+    }
+
+    public async Task<MediaTrackConstraints> GetConstraintsAsync()
+    {
+        IJSObjectReference result = await JSReference.InvokeAsync<IJSObjectReference>("getConstraints");
+        var newMediaTrackConstraints = new MediaTrackConstraints();
+        await MediaTrackConstraints.HydrateMediaTrackConstraints(newMediaTrackConstraints, JSRuntime, result);
+        return newMediaTrackConstraints;
     }
 
     public async Task StopAsync()
     {
         await JSReference.InvokeVoidAsync("stop");
+    }
+
+    public async Task<MediaTrackSettings> GetSettingsAsync()
+    {
+        return await JSReference.InvokeAsync<MediaTrackSettings>("getSettings");
+    }
+
+    public async Task ApplyContraintsAsync(MediaTrackConstraints? constraints = null)
+    {
+        await JSReference.InvokeVoidAsync("applyConstraints", constraints);
     }
 }

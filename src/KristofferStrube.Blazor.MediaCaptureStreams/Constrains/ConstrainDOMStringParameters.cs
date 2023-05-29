@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace KristofferStrube.Blazor.MediaCaptureStreams.Constrains;
+namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
 public class ConstrainDOMStringParameters
 {
