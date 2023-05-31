@@ -119,6 +119,10 @@ partial interface MediaDevices {
     Promise<MediaStream> getUserMedia(optional MediaStreamConstraints constraints = {});
 };
 
+callback NavigatorUserMediaSuccessCallback = undefined (MediaStream stream);
+
+callback NavigatorUserMediaErrorCallback = undefined (DOMException error);
+
 dictionary MediaTrackSupportedConstraints {
     boolean width = true;
     boolean height = true;
@@ -232,6 +236,18 @@ dictionary MediaTrackSettings {
     unsigned long channelCount;
     DOMString deviceId;
     DOMString groupId;
+};
+
+[Exposed=Window]
+interface MediaStreamTrackEvent : Event {
+  constructor(DOMString type, MediaStreamTrackEventInit eventInitDict);
+  [SameObject] readonly attribute MediaStreamTrack track;
+};
+
+[Exposed=Window]
+interface OverconstrainedError : DOMException {
+  constructor(DOMString constraint, optional DOMString message = "");
+  readonly attribute DOMString constraint;
 };";
 
 }

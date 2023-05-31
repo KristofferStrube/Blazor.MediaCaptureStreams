@@ -1,4 +1,5 @@
 ﻿@page "/video"
+@using KristofferStrube.Blazor.WebIDL.Exceptions;
 @implements IAsyncDisposable
 @inject IMediaDevicesService MediaDevicesService
 @inject IJSRuntime JSRuntime
@@ -10,11 +11,7 @@
 <p>Here we open a video track with the constraint of having a 4:3 aspect ration and show it in a <code>video</code> tag.</p>
 <p>After it has been opened we make it possible to choose other devices that are of the kind <code>videoinput</code>.</p>
 
-@if (mediaDevices is null)
-{
-    <p style="color: red;">Could not get media devices.</p>
-}
-else if (error is { } errorMessage)
+@if (error is { } errorMessage)
 {
     <p style="color: red;">@errorMessage</p>
 }
@@ -76,9 +73,13 @@ else
                 }
             }
         }
+        catch (WebIDLException ex)
+        {
+            error = $"{ex.GetType().Name}: {ex.Message}";
+        }
         catch(Exception ex)
         {
-            error = ex.Message;
+            error = $"{ex.GetType().Name}: {ex.Message}";
         }
     }
 
