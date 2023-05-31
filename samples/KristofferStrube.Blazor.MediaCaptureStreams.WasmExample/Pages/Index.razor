@@ -1,4 +1,5 @@
 ﻿@page "/"
+@implements IAsyncDisposable
 @inject IMediaDevicesService MediaDevicesService
 
 <PageTitle>Media Capture and Streams - Load Tracks</PageTitle>
@@ -6,7 +7,6 @@
 <h2>Load Tracks</h2>
 
 <p>On this page we try to load two media tracks that match some constraints.</p>
-
 
 @if (error is { } errorMessage)
 {
@@ -318,5 +318,20 @@ else
         await track.StopAsync();
         await mediaStream.RemoveTrackAsync(track);
         await LoadTracksAsync();
+    }
+
+    async Task StopVideoTrack()
+    {
+        if (mediaStream is null) return;
+        var videoTrack = (await mediaStream.GetVideoTracksAsync()).FirstOrDefault();
+        if (videoTrack is not null)
+        {
+            await videoTrack.StopAsync();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopVideoTrack();
     }
 }
