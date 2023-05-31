@@ -43,9 +43,6 @@ else
 @code {
     private string? error;
     private MediaDevices? mediaDevices;
-    private MediaStream? mediaStream;
-    private string? audioTrackId;
-    private string? videoTrackId;
     private List<(string label, MediaDeviceKind kind, string id)>? deviceOptions;
 
     protected override async Task OnInitializedAsync()
@@ -84,7 +81,7 @@ else
 
         try
         {
-            mediaStream = await mediaDevices.GetUserMediaAsync(
+            var mediaStream = await mediaDevices.GetUserMediaAsync(
                 new MediaStreamConstraints()
                     {
                         Audio = true,
@@ -92,11 +89,16 @@ else
                     }
             );
 
-            var audioTracks = await mediaStream.GetAudioTracksAsync();
-            await audioTracks.First().StopAsync();
-
-            var videoTracks = await mediaStream.GetVideoTracksAsync();
-            await videoTracks.First().StopAsync();
+            var audioTrack = (await mediaStream.GetAudioTracksAsync()).FirstOrDefault();
+            if (audioTrack is not null)
+            {
+                await audioTrack.StopAsync();
+            }
+            var videoTrack = (await mediaStream.GetVideoTracksAsync()).FirstOrDefault();
+            if (videoTrack is not null)
+            {
+                await videoTrack.StopAsync();
+            }
         }
         catch (Exception)
         {
