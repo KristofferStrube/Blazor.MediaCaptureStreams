@@ -2,9 +2,11 @@
 @inject IMediaDevicesService MediaDevicesService
 @inject IJSRuntime JSRuntime
 
-<PageTitle>Media Capture and Streams - Load Devices</PageTitle>
+<PageTitle>Media Capture and Streams - Video Capture</PageTitle>
 
-<h2>Here we open a video track and show it in a <code>video</code> tag.</h2>
+<h2>Video Capture</h2>
+
+<p>Here we open a video track with the constraint of having a 21/9 aspect ration and show it in a <code>video</code> tag.</p>
 
 @if (error is { } errorMessage)
 {
@@ -31,7 +33,7 @@ else
             var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
             var mediaTrackConstraints = new MediaTrackConstraints()
             {
-                AspectRatio = 9.0/21.0,
+                AspectRatio = 21.0/9.0,
             };
             mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints } );
             StateHasChanged();

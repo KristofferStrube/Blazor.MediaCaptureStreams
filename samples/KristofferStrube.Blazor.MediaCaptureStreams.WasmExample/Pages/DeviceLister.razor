@@ -1,0 +1,106 @@
+﻿@page "/devicelister"
+@using System.Text.Json.Serialization;
+@inject IMediaDevicesService MediaDevicesService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Media Capture and Streams - Device Lister</PageTitle>
+
+<h2>Device Lister</h2>
+<p>On this page we first request access to a single video camera and microphone and after getting allowed to do this we can list all devices.</p>
+
+@if (error is { } errorMessage)
+{
+    <p style="color: red;">@errorMessage</p>
+}
+else if (deviceOptions is null)
+{
+    <button class="btn btn-primary" @onclick="LoadDevices">Load video and audio</button>
+}
+else
+{
+    <h3>Video Devices</h3>
+    <ul>
+        @foreach (var option in deviceOptions.Where(o => o.kind is MediaDeviceKind.VideoInput))
+        {
+            <li>
+                <h4>@option.label</h4>
+                @option.id
+            </li>
+        }
+    </ul>
+    <h3>Audio Devices</h3>
+    <ul>
+        @foreach (var option in deviceOptions.Where(o => o.kind is MediaDeviceKind.AudioInput))
+        {
+            <li>
+                <h4>@option.label</h4>
+                @option.id
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private string? error;
+    private MediaDevices? mediaDevices;
+    private MediaStream? mediaStream;
+    private string? audioTrackId;
+    private string? videoTrackId;
+    private List<(string label, MediaDeviceKind kind, string id)>? deviceOptions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
+    }
+
+    private async Task LoadDevices()
+    {
+        if (mediaDevices is null) return;
+        try
+        {
+            await GetUserMedia();
+            var deviceInfos = await mediaDevices.EnumerateDevicesAsync();
+            deviceOptions = new();
+            foreach (MediaDeviceInfo info in deviceInfos)
+            {
+                deviceOptions.Add(
+                    (
+                        label: await info.GetLabelAsync(),
+                        kind: await info.GetKindAsync(),
+                        id: await info.GetDeviceIdAsync()
+                    )
+                );
+            }
+        }
+        catch (Exception)
+        {
+            error = $"Could not list media sources.";
+        }
+    }
+
+    private async Task GetUserMedia()
+    {
+        if (mediaDevices is null) return;
+
+        try
+        {
+            mediaStream = await mediaDevices.GetUserMediaAsync(
+                new MediaStreamConstraints()
+                    {
+                        Audio = true,
+                        Video = true
+                    }
+            );
+
+            var audioTracks = await mediaStream.GetAudioTracksAsync();
+            await audioTracks.First().StopAsync();
+
+            var videoTracks = await mediaStream.GetVideoTracksAsync();
+            await videoTracks.First().StopAsync();
+        }
+        catch (Exception)
+        {
+            error = $"Could not load media.";
+        }
+    }
+}
