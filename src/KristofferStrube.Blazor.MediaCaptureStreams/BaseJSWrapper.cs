@@ -8,7 +8,10 @@ public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
 {
     protected readonly Lazy<Task<IJSObjectReference>> helperTask;
 
+    /// <inheritdoc/>
     public IJSRuntime JSRuntime { get; }
+
+    /// <inheritdoc/>
     public IJSObjectReference JSReference { get; }
 
     /// <summary>

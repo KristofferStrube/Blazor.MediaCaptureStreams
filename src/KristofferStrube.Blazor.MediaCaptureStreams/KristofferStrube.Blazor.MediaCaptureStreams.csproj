@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -35,7 +35,7 @@
 
   <ItemGroup>
     <PackageReference Include="KristofferStrube.Blazor.DOM" Version="0.1.0-alpha.5" />
-    <PackageReference Include="KristofferStrube.Blazor.WebIDL" Version="0.1.0-alpha.17" />
+    <PackageReference Include="KristofferStrube.Blazor.WebIDL" Version="0.1.0-alpha.20" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.4" />
   </ItemGroup>
 

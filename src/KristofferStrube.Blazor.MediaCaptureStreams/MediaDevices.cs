@@ -4,11 +4,14 @@ using KristofferStrube.Blazor.MediaCaptureStreams.Exceptions;
 using KristofferStrube.Blazor.WebIDL;
 using KristofferStrube.Blazor.WebIDL.Exceptions;
 using Microsoft.JSInterop;
+using System.Text.Json;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
 public class MediaDevices : EventTarget
 {
+    private const string Constraint = "constraint";
+
     private readonly Lazy<Task<IJSObjectReference>> mediaCaptureStreamsHelperTask;
     private readonly ErrorHandlingJSObjectReference? errorHandlingJSReference;
 
@@ -29,6 +32,13 @@ public class MediaDevices : EventTarget
         if (ErrorHandlingJSInterop.ErrorHandlingJSInteropHasBeenSetup)
         {
             errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSReference);
+            errorHandlingJSReference.ExtraErrorProperties = new string[] { Constraint };
+            errorHandlingJSReference.ErrorMapper.TryAdd("OverconstrainedError", (jSError) => new OverconstrainedErrorException(
+                jSError.ExtensionData is not null ? jSError.ExtensionData.TryGetValue(Constraint, out JsonElement json) ? (json.GetString() ?? string.Empty) : string.Empty : string.Empty,
+                jSError.Message,
+                jSError.Stack,
+                jSError.InnerException)
+            );
         }
     }
 
@@ -85,10 +95,6 @@ public class MediaDevices : EventTarget
     {
         var jSReference = errorHandlingJSReference ?? JSReference;
         IJSObjectReference jSInstance = await jSReference.InvokeAsync<IJSObjectReference>("getUserMedia", constraints);
-        if (jSInstance is IErrorHandlingJSInProcessObjectReference { } errorHandling)
-        {
-            jSInstance = errorHandling.JSReference;
-        }
         return await MediaStream.CreateAsync(JSRuntime, jSInstance);
     }
 }

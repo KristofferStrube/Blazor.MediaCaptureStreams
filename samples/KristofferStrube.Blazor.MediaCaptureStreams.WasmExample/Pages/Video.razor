@@ -1,4 +1,5 @@
 ﻿@page "/video"
+@using KristofferStrube.Blazor.MediaCaptureStreams.Exceptions;
 @using KristofferStrube.Blazor.WebIDL.Exceptions;
 @implements IAsyncDisposable
 @inject IMediaDevicesService MediaDevicesService
@@ -10,12 +11,13 @@
 
 <p>Here we open a video track with the constraint of having a 4:3 aspect ration and show it in a <code>video</code> tag.</p>
 <p>After it has been opened we make it possible to choose other devices that are of the kind <code>videoinput</code>.</p>
+<p>You also get to adjust the frame rate and potentially set it outside the range of the capabilities of your device which will throw an <code>OverconstrainedErrorException</code> that we catch.</p>
 
 @if (error is { } errorMessage)
 {
     <p style="color: red;">@errorMessage</p>
 }
-else if (mediaStream is null)
+@if (mediaStream is null)
 {
     <button class="btn btn-primary" @onclick="OpenVideo">Load Camera</button>
 }
@@ -26,11 +28,14 @@ else
     {
         <label for="videoSource">Video Source</label>
         <select id="videoSource" @bind=selectedVideoSource @bind:after="LoadMediaStream">
-            @foreach(var option in videoOptions)
+            @foreach (var option in videoOptions)
             {
                 <option value="@option.id" selected="@(option.id == selectedVideoSource)">@option.label</option>
             }
         </select>
+        <br />
+        <label for="frameRate">Frame Rate (Current Camera Capabilites are @minimalFrameRate - @maximumFrameRate)</label>
+        <input id="frameRate" type="number" step="1" @bind="frameRate" @bind:after="LoadMediaStream" />
     }
 }
 
@@ -41,6 +46,9 @@ else
     private ElementReference videoElement;
     private List<(string label, string id)> videoOptions = new();
     private string? selectedVideoSource;
+    private double? frameRate;
+    private double minimalFrameRate;
+    private double maximumFrameRate;
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,7 +64,8 @@ else
             if (mediaStream is null) return;
 
             var deviceInfos = await mediaDevices.EnumerateDevicesAsync();
-            foreach(var device in deviceInfos)
+            videoOptions.Clear();
+            foreach (var device in deviceInfos)
             {
                 if (await device.GetKindAsync() is MediaDeviceKind.VideoInput)
                 {
@@ -67,7 +76,7 @@ else
             var videoTrack = (await mediaStream.GetVideoTracksAsync()).FirstOrDefault();
             if (videoTrack is not null)
             {
-                if (await videoTrack.GetCapabilitiesAsync() is {} capabilities)
+                if (await videoTrack.GetCapabilitiesAsync() is { } capabilities)
                 {
                     selectedVideoSource = capabilities.DeviceId;
                 }
@@ -77,7 +86,7 @@ else
         {
             error = $"{ex.GetType().Name}: {ex.Message}";
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             error = $"{ex.GetType().Name}: {ex.Message}";
         }
@@ -87,17 +96,39 @@ else
     {
         await StopVideoTrack();
 
-        var mediaTrackConstraints = new MediaTrackConstraints()
-            {
-                AspectRatio = 4.0 / 3.0,
-                DeviceId = selectedVideoSource is null ? null : new ConstrainDomString(selectedVideoSource)
-            };
-        mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints });
+        try
+        {
+            var mediaTrackConstraints = new MediaTrackConstraints()
+                {
+                    AspectRatio = 4.0 / 3.0,
+                    FrameRate = frameRate is { } setFrameRate ? new ConstrainDoubleRange() { Exact = setFrameRate } : frameRate,
+                    DeviceId = selectedVideoSource is null ? null : new ConstrainDomString(selectedVideoSource)
+                };
+            mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints });
 
-        StateHasChanged();
-        // We don't have a wrapper for HtmlMediaElement's yet so we use simple JSInterop for this part.
-        var htmlMediaElement = await JSRuntime.InvokeAsync<IJSObjectReference>("getReference", videoElement);
-        await JSRuntime.InvokeVoidAsync("setAttribute", htmlMediaElement, "srcObject", mediaStream.JSReference);
+            var videoTrack = (await mediaStream.GetVideoTracksAsync()).FirstOrDefault();
+            if (videoTrack is not null)
+            {
+                var capabilities = await videoTrack.GetCapabilitiesAsync();
+                minimalFrameRate = capabilities.FrameRate?.Min ?? 0;
+                maximumFrameRate = capabilities.FrameRate?.Max ?? 0;
+                if (frameRate is null)
+                {
+                    frameRate = (maximumFrameRate + minimalFrameRate) / 2.0;
+                }
+            }
+
+            StateHasChanged();
+            // We don't have a wrapper for HtmlMediaElement's yet so we use simple JSInterop for this part.
+            var htmlMediaElement = await JSRuntime.InvokeAsync<IJSObjectReference>("getReference", videoElement);
+            await JSRuntime.InvokeVoidAsync("setAttribute", htmlMediaElement, "srcObject", mediaStream.JSReference);
+        }
+        catch (OverconstrainedErrorException ex)
+        {
+            error = $"The following constraint was overconstrained: {ex.Constraint}";
+            frameRate = null;
+            await StopVideoTrack();
+        }
     }
 
     async Task StopVideoTrack()
@@ -108,6 +139,7 @@ else
         {
             await videoTrack.StopAsync();
         }
+        mediaStream = null;
     }
 
     public async ValueTask DisposeAsync()

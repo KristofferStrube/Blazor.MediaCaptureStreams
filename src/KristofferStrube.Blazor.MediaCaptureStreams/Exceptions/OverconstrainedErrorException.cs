@@ -1,4 +1,7 @@
-﻿using KristofferStrube.Blazor.WebIDL.Exceptions;
+﻿using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
+using KristofferStrube.Blazor.WebIDL.Exceptions;
+using Microsoft.JSInterop;
+using Microsoft.JSInterop.Implementation;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams.Exceptions;
 
@@ -7,14 +10,17 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams.Exceptions;
 /// </summary>
 public class OverconstrainedErrorException : DOMException
 {
+    public IJSObjectReference JSReference { get; }
+
     /// <summary>
-    /// The name of a constraint associated with this error, or "" if no specific constraint name is revealed.
+    /// The name of the constraint associated with this error, or "" if no specific constraint name is revealed.
+    /// </summary>
     /// </summary>
     public string Constraint { get; }
 
     /// <inheritdoc />
-    /// <param name="constraint">The name of the constraint associated with the error.</param>
-    protected OverconstrainedErrorException(string constraint, string message, string? jSStackTrace, Exception innerException) : base(message, "OverconstrainedErrorException", jSStackTrace, innerException)
+    /// <param name="constraint">The constraint that was overconstrained.</param>
+    public OverconstrainedErrorException(string constraint, string message, string? jSStackTrace, Exception innerException) : base(message, "OverconstrainedErrorException", jSStackTrace, innerException)
     {
         Constraint = constraint;
     }

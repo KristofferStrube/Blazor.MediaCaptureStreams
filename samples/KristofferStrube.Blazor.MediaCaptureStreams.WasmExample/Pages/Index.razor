@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using KristofferStrube.Blazor.WebIDL.Exceptions;
 @implements IAsyncDisposable
 @inject IMediaDevicesService MediaDevicesService
 
@@ -234,63 +235,70 @@ else
 
     async Task LoadMediaStream()
     {
-        var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
-        var mediaConstraints = new MediaStreamConstraints()
-            {
-                Video = new MediaTrackConstraints()
+        try
+        {
+            var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
+            var mediaConstraints = new MediaStreamConstraints()
                 {
-                    Advanced = new[]
-                                        {
+                    Video = new MediaTrackConstraints()
+                    {
+                        Advanced = new[]
+                                                {
                         new MediaTrackConstraintSet()
                         {
                             AspectRatio = 1 / 6
                         }
                     },
-                    Width = new ConstrainULongRange()
-                    {
-                        Min = 100,
-                        Max = 2000,
-                        Ideal = 1920
+                        Width = new ConstrainULongRange()
+                        {
+                            Min = 100,
+                            Max = 2000,
+                            Ideal = 1920
+                        },
+                        Height = 1080,
+                        AspectRatio = new ConstrainDoubleRange()
+                        {
+                            Min = 3.0 / 4.0,
+                            Max = 21.0 / 9.0
+                        },
+                        FrameRate = 30,
+                        FacingMode = VideoFacingMode.User,
+                        ResizeMode = new ConstrainVideoResizeModeParameters()
+                        {
+                            Ideal = new[] { VideoResizeMode.CropAndScale, VideoResizeMode.None },
+                            Exact = new[] { VideoResizeMode.CropAndScale }
+                        },
+                        DeviceId = "Some device",
+                        GroupId = ""
                     },
-                    Height = 1080,
-                    AspectRatio = new ConstrainDoubleRange()
+                    Audio = new MediaTrackConstraints()
                     {
-                        Min = 3.0 / 4.0,
-                        Max = 21.0 / 9.0
-                    },
-                    FrameRate = 30,
-                    FacingMode = VideoFacingMode.User,
-                    ResizeMode = new ConstrainVideoResizeModeParameters()
-                    {
-                        Ideal = new[] { VideoResizeMode.CropAndScale, VideoResizeMode.None },
-                        Exact = new[] { VideoResizeMode.CropAndScale }
-                    },
-                    DeviceId = "Some device",
-                    GroupId = ""
-                },
-                Audio = new MediaTrackConstraints()
-                {
-                    SampleRate = 10,
-                    SampleSize = new ConstrainULongRange()
-                    {
-                        Ideal = 100,
-                        Max = 200,
-                        Min = 10
-                    },
-                    EchoCancellation = true,
-                    AutoGainControl = new ConstrainBooleanParameters()
-                    {
-                        Ideal = true,
-                        Exact = false
-                    },
-                    NoiseSuppression = false,
-                    Latency = 2.2,
-                    ChannelCount = 2,
-                }
-            };
-        mediaStream = await mediaDevices.GetUserMediaAsync(mediaConstraints);
-        id = await mediaStream.GetIdAsync();
-        await LoadTracksAsync();
+                        SampleRate = 10,
+                        SampleSize = new ConstrainULongRange()
+                        {
+                            Ideal = 100,
+                            Max = 200,
+                            Min = 10
+                        },
+                        EchoCancellation = true,
+                        AutoGainControl = new ConstrainBooleanParameters()
+                        {
+                            Ideal = true,
+                            Exact = false
+                        },
+                        NoiseSuppression = false,
+                        Latency = 2.2,
+                        ChannelCount = 2,
+                    }
+                };
+            mediaStream = await mediaDevices.GetUserMediaAsync(mediaConstraints);
+            id = await mediaStream.GetIdAsync();
+            await LoadTracksAsync();
+        }
+        catch (WebIDLException ex)
+        {
+            error = $"{ex.GetType().Name}: {ex.Message}";
+        }
     }
 
     async Task LoadTracksAsync()
