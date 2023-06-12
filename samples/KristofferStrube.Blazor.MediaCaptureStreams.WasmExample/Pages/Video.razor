@@ -9,7 +9,7 @@
 
 <h2>Video Capture</h2>
 
-<p>Here we open a video track with the constraint of having a 4:3 aspect ration and show it in a <code>video</code> tag.</p>
+<p>Here we open a video track with the constraint of having a 16:9 aspect ration and show it in a <code>video</code> tag.</p>
 <p>After it has been opened we make it possible to choose other devices that are of the kind <code>videoinput</code>.</p>
 <p>You also get to adjust the frame rate and potentially set it outside the range of the capabilities of your device which will throw an <code>OverconstrainedErrorException</code> that we catch.</p>
 
@@ -23,7 +23,6 @@
 }
 else
 {
-    <video @ref="videoElement" width="100%" height="500" autoplay controls></video>
     @if (videoOptions.Count > 0)
     {
         <label for="videoSource">Video Source</label>
@@ -37,6 +36,7 @@ else
         <label for="frameRate">Frame Rate (Current Camera Capabilites are @minimalFrameRate - @maximumFrameRate)</label>
         <input id="frameRate" type="number" step="1" @bind="frameRate" @bind:after="LoadMediaStream" />
     }
+    <video @ref="videoElement" width="100%" height="400" autoplay controls></video>
 }
 
 @code {
@@ -100,7 +100,7 @@ else
         {
             var mediaTrackConstraints = new MediaTrackConstraints()
                 {
-                    AspectRatio = 4.0 / 3.0,
+                    AspectRatio = 16.0 / 9.0,
                     FrameRate = frameRate is { } setFrameRate ? new ConstrainDoubleRange() { Exact = setFrameRate } : frameRate,
                     DeviceId = selectedVideoSource is null ? null : new ConstrainDomString(selectedVideoSource)
                 };
