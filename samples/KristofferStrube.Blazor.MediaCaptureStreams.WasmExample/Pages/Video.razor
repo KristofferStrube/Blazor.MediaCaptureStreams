@@ -9,9 +9,9 @@
 
 <h2>Video Capture</h2>
 
-<p>Here we open a video track with the constraint of having a 16:9 aspect ration and show it in a <code>video</code> tag.</p>
+<p>Here we open a video track with the constraint of having a 16:9 aspect ratio and show it in a <code>video</code> tag.</p>
 <p>After it has been opened we make it possible to choose other devices that are of the kind <code>videoinput</code>.</p>
-<p>You also get to adjust the frame rate and potentially set it outside the range of the capabilities of your device which will throw an <code>OverconstrainedErrorException</code> that we catch.</p>
+<p>We can also adjust the frame rate and potentially set it outside the range of the capabilities of your device which will throw an <code>OverconstrainedErrorException</code> that we can catch.</p>
 
 @if (error is { } errorMessage)
 {
