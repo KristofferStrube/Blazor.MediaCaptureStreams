@@ -7,7 +7,7 @@ public class VideoResizeModeConverter : JsonConverter<VideoResizeMode>
 {
     public override VideoResizeMode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var value = reader.GetString();
+        string? value = reader.GetString();
         return value switch
         {
             "none" => VideoResizeMode.None,

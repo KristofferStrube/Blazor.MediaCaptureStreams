@@ -20,7 +20,7 @@ public class MediaTrackConstraints : MediaTrackConstraintSet
             List<MediaTrackConstraintSet> advanced = new((int)length);
             for (long i = 0; i < length; i++)
             {
-                var advancedHydrateObject = new MediaTrackConstraintSet();
+                MediaTrackConstraintSet advancedHydrateObject = new MediaTrackConstraintSet();
                 advanced.Add(await HydrateMediaTrackConstraintSet(advancedHydrateObject, jSRuntime, await array.AtAsync(i)));
             }
         }

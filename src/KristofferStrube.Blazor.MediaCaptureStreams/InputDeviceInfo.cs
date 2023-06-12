@@ -10,7 +10,7 @@ public class InputDeviceInfo : MediaDeviceInfo
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="InputDeviceInfo"/>.</param>
     /// <returns>A wrapper instance for a <see cref="InputDeviceInfo"/>.</returns>
-    public new static Task<InputDeviceInfo> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public static new Task<InputDeviceInfo> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         return Task.FromResult(new InputDeviceInfo(jSRuntime, jSReference));
     }

@@ -16,7 +16,7 @@ public class ConstrainVideoResizeModeParameters
 
     public static async Task<ConstrainVideoResizeModeParameters> CreateFromJSObjectReference(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        var result = new ConstrainVideoResizeModeParameters();
+        ConstrainVideoResizeModeParameters result = new ConstrainVideoResizeModeParameters();
         ValueReference reference = await ValueReference.CreateAsync(jSRuntime, jSReference);
         await SetVideoResizeModeOrArrayProperty(reference, "exact", (value) => result.Exact = new(value));
         await SetVideoResizeModeOrArrayProperty(reference, "ideal", (value) => result.Ideal = new(value));
@@ -28,7 +28,7 @@ public class ConstrainVideoResizeModeParameters
         reference.ValueMapper["string"] = async () => await reference.GetValueAsync<VideoResizeMode>();
         reference.ValueMapper["array"] = async () => await reference.GetValueAsync<VideoResizeMode[]>();
         reference.Attribute = attribute;
-        var width = await reference.GetValueAsync();
+        object? width = await reference.GetValueAsync();
         if (width is not null)
         {
             propertySetter(width);

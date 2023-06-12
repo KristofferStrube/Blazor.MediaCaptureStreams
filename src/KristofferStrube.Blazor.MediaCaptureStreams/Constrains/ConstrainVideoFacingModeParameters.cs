@@ -16,7 +16,7 @@ public class ConstrainVideoFacingModeParameters
 
     public static async Task<ConstrainVideoFacingModeParameters> CreateFromJSObjectReference(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        var result = new ConstrainVideoFacingModeParameters();
+        ConstrainVideoFacingModeParameters result = new ConstrainVideoFacingModeParameters();
         ValueReference reference = await ValueReference.CreateAsync(jSRuntime, jSReference);
         await SetVideoFacingModeOrArrayProperty(reference, "exact", (value) => result.Exact = new(value));
         await SetVideoFacingModeOrArrayProperty(reference, "ideal", (value) => result.Ideal = new(value));
@@ -28,7 +28,7 @@ public class ConstrainVideoFacingModeParameters
         reference.ValueMapper["string"] = async () => await reference.GetValueAsync<VideoFacingMode>();
         reference.ValueMapper["array"] = async () => await reference.GetValueAsync<VideoFacingMode[]>();
         reference.Attribute = attribute;
-        var width = await reference.GetValueAsync();
+        object? width = await reference.GetValueAsync();
         if (width is not null)
         {
             propertySetter(width);

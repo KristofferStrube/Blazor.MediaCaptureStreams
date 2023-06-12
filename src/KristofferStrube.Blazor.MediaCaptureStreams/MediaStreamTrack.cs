@@ -50,7 +50,7 @@ public class MediaStreamTrack : EventTarget
     public async Task<MediaTrackConstraints> GetConstraintsAsync()
     {
         IJSObjectReference result = await JSReference.InvokeAsync<IJSObjectReference>("getConstraints");
-        var newMediaTrackConstraints = new MediaTrackConstraints();
+        MediaTrackConstraints newMediaTrackConstraints = new MediaTrackConstraints();
         await MediaTrackConstraints.HydrateMediaTrackConstraints(newMediaTrackConstraints, JSRuntime, result);
         return newMediaTrackConstraints;
     }

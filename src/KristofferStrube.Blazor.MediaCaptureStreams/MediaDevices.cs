@@ -1,6 +1,6 @@
 ﻿using KristofferStrube.Blazor.DOM;
-using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
 using KristofferStrube.Blazor.MediaCaptureStreams.Exceptions;
+using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
 using KristofferStrube.Blazor.WebIDL;
 using KristofferStrube.Blazor.WebIDL.Exceptions;
 using Microsoft.JSInterop;
@@ -31,8 +31,10 @@ public class MediaDevices : EventTarget
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
         if (ErrorHandlingJSInterop.ErrorHandlingJSInteropHasBeenSetup)
         {
-            errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSReference);
-            errorHandlingJSReference.ExtraErrorProperties = new string[] { Constraint };
+            errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSReference)
+            {
+                ExtraErrorProperties = new string[] { Constraint }
+            };
             errorHandlingJSReference.ErrorMapper.TryAdd("OverconstrainedError", (jSError) => new OverconstrainedErrorException(
                 jSError.ExtensionData is not null ? jSError.ExtensionData.TryGetValue(Constraint, out JsonElement json) ? (json.GetString() ?? string.Empty) : string.Empty : string.Empty,
                 jSError.Message,
@@ -61,7 +63,7 @@ public class MediaDevices : EventTarget
                 .Range(0, length)
                 .Select(async i =>
                     {
-                        var reference = new ValueReference(JSRuntime, devices, i);
+                        ValueReference reference = new ValueReference(JSRuntime, devices, i);
                         reference.ValueMapper["mediadeviceinfo"] = async () => await MediaDeviceInfo.CreateAsync(JSRuntime, await reference.GetValueAsync<IJSObjectReference>());
                         reference.ValueMapper["inputdeviceinfo"] = async () => await InputDeviceInfo.CreateAsync(JSRuntime, await reference.GetValueAsync<IJSObjectReference>());
                         return (MediaDeviceInfo)(await reference.GetValueAsync())!;
@@ -107,7 +109,7 @@ public class MediaDevices : EventTarget
     /// <exception cref="AbortErrorException" />
     public async Task<MediaStream> GetUserMediaAsync(MediaStreamConstraints constraints)
     {
-        var jSReference = errorHandlingJSReference ?? JSReference;
+        IJSObjectReference jSReference = errorHandlingJSReference ?? JSReference;
         IJSObjectReference jSInstance = await jSReference.InvokeAsync<IJSObjectReference>("getUserMedia", constraints);
         return await MediaStream.CreateAsync(JSRuntime, jSInstance);
     }

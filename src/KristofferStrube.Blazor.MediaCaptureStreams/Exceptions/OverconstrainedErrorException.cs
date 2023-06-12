@@ -1,7 +1,5 @@
-﻿using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
-using KristofferStrube.Blazor.WebIDL.Exceptions;
+﻿using KristofferStrube.Blazor.WebIDL.Exceptions;
 using Microsoft.JSInterop;
-using Microsoft.JSInterop.Implementation;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams.Exceptions;
 

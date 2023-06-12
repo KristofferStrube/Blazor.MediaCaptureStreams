@@ -134,7 +134,7 @@ public class MediaTrackConstraintSet
     private static async Task SetProperty(ValueReference reference, string attribute, Action<object> propertySetter)
     {
         reference.Attribute = attribute;
-        var value = await reference.GetValueAsync();
+        object? value = await reference.GetValueAsync();
         if (value is not null)
         {
             propertySetter(value);
