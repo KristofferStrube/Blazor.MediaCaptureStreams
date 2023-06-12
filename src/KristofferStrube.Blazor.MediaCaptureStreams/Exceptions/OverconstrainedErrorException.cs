@@ -15,7 +15,6 @@ public class OverconstrainedErrorException : DOMException
     /// <summary>
     /// The name of the constraint associated with this error, or "" if no specific constraint name is revealed.
     /// </summary>
-    /// </summary>
     public string Constraint { get; }
 
     /// <inheritdoc />
