@@ -2,6 +2,10 @@
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
+/// <summary>
+/// <see cref="MediaTrackSupportedConstraints"/> represents the list of constraints recognized by a User Agent for controlling the <see cref="MediaTrackCapabilities"/> of a <see cref="MediaStreamTrack"/> object.
+/// </summary>
+/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#dom-mediatracksupportedconstraints">See the API definition here</see></remarks>
 public class MediaTrackSupportedConstraints
 {
     [JsonPropertyName("width")]
