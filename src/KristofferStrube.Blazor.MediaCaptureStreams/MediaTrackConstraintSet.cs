@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
 /// <summary>
-/// Each member of a <see cref="MediaTrackConstraintSet"/> corresponds to a constrainable property and specifies a subset of the property's valid <see cref="MediaTrackCapabilities"/> values. Applying a <see cref="MediaTrackConstraintSet"/> instructs the User Agent to restrict the settings of the corresponding constrainable properties to the specified values or ranges of values. A given property may occur both in the basic <see cref="MediaTrackConstraints"/> set and in the <see cref="MediaTrackConstraints.Advanced"/> array, and may occur at most once in each <see cref="MediaTrackConstraintSet"/> in the <see cref="MediaTrackConstraints.Advanced"/> array.
+/// Each member of a <see cref="MediaTrackConstraintSet"/> corresponds to a constrainable property and specifies a subset of the property's valid <see cref="MediaTrackCapabilities"/> values. Applying a <see cref="MediaTrackConstraintSet"/> instructs the User Agent to restrict the settings of the corresponding constrainable properties to the specified values or ranges of values.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackconstraintset">See the API definition here</see></remarks>
 public class MediaTrackConstraintSet
@@ -33,7 +33,6 @@ public class MediaTrackConstraintSet
 
     /// <summary>
     /// The frame rate (frames per second).
-    /// As a setting, this value represents the configured frame rate. If decimation is used, this is that value rather than the native frame rate. For example, if the setting is 25 frames per second via decimation, the native frame rate of the camera is 30 frames per second but due to lighting conditions only 20 frames per second is achieved, <see cref="FrameRate"/> reports the setting: 25 frames per second.
     /// </summary>
     [JsonPropertyName("frameRate")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
