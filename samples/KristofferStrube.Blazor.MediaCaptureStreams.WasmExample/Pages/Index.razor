@@ -32,8 +32,13 @@ else
     {
         var mediaStreamTrack = trackInfo.track;
         <div class="my-3">
-            <h4><b>@trackInfo.kind</b>: @trackInfo.label</h4>
+            <h4 class="badge @(trackInfo.state is MediaStreamTrackState.Live ? "bg-success" : "bg-warning")"><b>@trackInfo.kind</b>: @trackInfo.label</h4>
             id: <u>@trackInfo.id</u>
+            <br />
+
+            <button class="btn bg-warning" @onclick="() => Stop(mediaStreamTrack)">Stop</button>
+            <button class="btn bg-danger" @onclick="() => Remove(mediaStreamTrack)">Remove</button>
+
             <div class="my-1 p-1 border border-secondary rounded">
                 <h5>Constraints:</h5>
                 @if (trackInfo.constaints?.Width is not null)
@@ -221,7 +226,6 @@ else
                 <h5>Capabilites:</h5>
                 <textarea style="height:20vh; width: 100%;">@System.Text.Json.JsonSerializer.Serialize(trackInfo.capabilities, new System.Text.Json.JsonSerializerOptions() { WriteIndented = true })</textarea>
             </div>
-            <button class="btn bg-warning" @onclick="() => RemoveAsync(mediaStreamTrack)">Stop and Remove</button>
         </div>
     }
 }
@@ -230,7 +234,7 @@ else
     private MediaStream? mediaStream;
     private bool active;
     private string id = string.Empty;
-    private (MediaStreamTrackKind kind, string label, string id, MediaTrackCapabilities capabilities, MediaTrackConstraints constaints, MediaStreamTrack track)[]? tracks;
+    private (MediaStreamTrackKind kind, string label, string id, MediaStreamTrackState state, MediaTrackCapabilities capabilities, MediaTrackConstraints constaints, MediaStreamTrack track)[]? tracks;
     private string? error;
 
     async Task LoadMediaStream()
@@ -311,6 +315,7 @@ else
                         kind: await track.GetKindAsync(),
                         label: await track.GetLabelAsync(),
                         id: await track.GetIdAsync(),
+                        state: await track.GetReadyStateAsync(),
                         capabilities: await track.GetCapabilitiesAsync(),
                         constraints: await track.GetConstraintsAsync(),
                         track: track
@@ -320,10 +325,16 @@ else
         active = await mediaStream.GetActiveAsync();
     }
 
-    async Task RemoveAsync(MediaStreamTrack track)
+    async Task Stop(MediaStreamTrack track)
     {
         if (mediaStream is null) return;
         await track.StopAsync();
+        await LoadTracksAsync();
+    }
+
+    async Task Remove(MediaStreamTrack track)
+    {
+        if (mediaStream is null) return;
         await mediaStream.RemoveTrackAsync(track);
         await LoadTracksAsync();
     }

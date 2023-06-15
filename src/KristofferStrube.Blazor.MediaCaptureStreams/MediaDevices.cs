@@ -26,6 +26,11 @@ public class MediaDevices : EventTarget
         return Task.FromResult(new MediaDevices(jSRuntime, jSReference));
     }
 
+    /// <summary>
+    /// Constructs a wrapper instance for a given JS Instance of a <see cref="MediaDevices"/>.
+    /// </summary>
+    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
+    /// <param name="jSReference">A JS reference to an existing <see cref="MediaDevices"/>.</param>
     protected MediaDevices(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
     {
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
@@ -42,6 +47,26 @@ public class MediaDevices : EventTarget
                 jSError.InnerException)
             );
         }
+    }
+
+    /// <summary>
+    /// Adds an <see cref="EventListener{Event}"/> for when the set of media devices, available to the User Agent, has changed. The current list devices can be retrieved with the <see cref="EnumerateDevicesAsync"/> method.
+    /// </summary>
+    /// <param name="callback">Callback that will be invoked when the event is dispatched.</param>
+    /// <param name="options"><inheritdoc cref="EventTarget.AddEventListenerAsync{TEvent}(string, EventListener{TEvent}?, AddEventListenerOptions?)" path="/param[@name='options']"/></param>
+    public async Task AddOnDeviceChangeEventListenerAsync(EventListener<Event> callback, AddEventListenerOptions? options = null)
+    {
+        await AddEventListenerAsync("devicechange", callback, options);
+    }
+
+    /// <summary>
+    /// Removes the event listener from the event listener list if it has been parsed to <see cref="AddOnDeviceChangeEventListenerAsync"/> previously.
+    /// </summary>
+    /// <param name="callback">The callback <see cref="EventListener{Event}"/> that you want to stop listening to events.</param>
+    /// <param name="options"><inheritdoc cref="EventTarget.RemoveEventListenerAsync{TEvent}(string, EventListener{TEvent}?, EventListenerOptions?)" path="/param[@name='options']"/></param>
+    public async Task RemoveOnDeviceChangeEventListenerAsync(EventListener<Event> callback, EventListenerOptions? options = null)
+    {
+        await RemoveEventListenerAsync("devicechange", callback, options);
     }
 
     /// <summary>

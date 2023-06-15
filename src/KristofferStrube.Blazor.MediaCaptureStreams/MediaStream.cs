@@ -96,6 +96,11 @@ public class MediaStream : EventTarget
         );
     }
 
+    public async Task AddTrackAsync(MediaStreamTrack track)
+    {
+        await JSReference.InvokeVoidAsync("addTrack", track.JSReference);
+    }
+
     public async Task RemoveTrackAsync(MediaStreamTrack track)
     {
         await JSReference.InvokeVoidAsync("removeTrack", track.JSReference);

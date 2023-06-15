@@ -41,4 +41,9 @@ public class MediaDeviceInfo : BaseJSWrapper
         IJSObjectReference helper = await helperTask.Value;
         return await helper.InvokeAsync<string>("getAttribute", JSReference, "groupId");
     }
+
+    public async Task<string> ToJSONAsync()
+    {
+        return await JSReference.InvokeAsync<string>("toJSON");
+    }
 }

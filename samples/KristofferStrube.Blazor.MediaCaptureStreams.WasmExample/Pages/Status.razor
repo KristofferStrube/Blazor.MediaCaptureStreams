@@ -25,14 +25,11 @@
     }
 
     private (int start, int end)[] supportedRows = new (int start, int end)[] {
-        (0, 5),
-        (7, 15),
-        (17, 150),
+        (0, 150),
         (153, 153),
         (155, 155),
-        (160, 164),
-        (172, 177),
-        (184, 200)
+        (160, 200),
+        (212, 216)
     };
 
     private const string webIDL = @"partial interface Navigator {
@@ -241,6 +238,10 @@ dictionary MediaTrackSettings {
 interface MediaStreamTrackEvent : Event {
   constructor(DOMString type, MediaStreamTrackEventInit eventInitDict);
   [SameObject] readonly attribute MediaStreamTrack track;
+};
+
+dictionary MediaStreamTrackEventInit : EventInit {
+  required MediaStreamTrack track;
 };
 
 [Exposed=Window]
