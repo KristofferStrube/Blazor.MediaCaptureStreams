@@ -28,7 +28,7 @@ public class MediaStreamTrack : EventTarget
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="MediaStreamTrack"/>.</param>
-    internal protected MediaStreamTrack(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
+    protected internal MediaStreamTrack(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
     {
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
     }

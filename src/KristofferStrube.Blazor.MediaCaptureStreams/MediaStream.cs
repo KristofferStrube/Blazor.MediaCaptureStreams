@@ -1,6 +1,5 @@
 ﻿using KristofferStrube.Blazor.DOM;
 using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
-using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
@@ -198,7 +197,7 @@ public class MediaStream : EventTarget
     /// <returns>A new <see cref="MediaStream"/>.</returns>
     public async Task<MediaStream> CloneAsync()
     {
-        var jSInstance = await JSReference.InvokeAsync<IJSObjectReference>("clone");
+        IJSObjectReference jSInstance = await JSReference.InvokeAsync<IJSObjectReference>("clone");
         return new MediaStream(JSRuntime, jSInstance);
     }
 
