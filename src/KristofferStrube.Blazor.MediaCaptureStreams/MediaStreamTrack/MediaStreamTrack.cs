@@ -28,7 +28,7 @@ public class MediaStreamTrack : EventTarget
     /// </summary>
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="MediaStreamTrack"/>.</param>
-    protected MediaStreamTrack(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
+    internal protected MediaStreamTrack(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
     {
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
     }
@@ -95,7 +95,7 @@ public class MediaStreamTrack : EventTarget
     }
 
     /// <summary>
-    /// Adds an <see cref="EventListener{Event}"/> for when the <see cref="MediaStreamTrack"/> object's source is temporarily unable to provide data.
+    /// Adds an <see cref="EventListener{TEvent}"/> for when the <see cref="MediaStreamTrack"/> object's source is temporarily unable to provide data.
     /// </summary>
     /// <param name="callback">Callback that will be invoked when the event is dispatched.</param>
     /// <param name="options"><inheritdoc cref="EventTarget.AddEventListenerAsync{TEvent}(string, EventListener{TEvent}?, AddEventListenerOptions?)" path="/param[@name='options']"/></param>
@@ -107,7 +107,7 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Removes the event listener from the event listener list if it has been parsed to <see cref="AddOnMuteEventListenerAsync"/> previously.
     /// </summary>
-    /// <param name="callback">The callback <see cref="EventListener{Event}"/> that you want to stop listening to events.</param>
+    /// <param name="callback">The callback <see cref="EventListener{TEvent}"/> that you want to stop listening to events.</param>
     /// <param name="options"><inheritdoc cref="EventTarget.RemoveEventListenerAsync{TEvent}(string, EventListener{TEvent}?, EventListenerOptions?)" path="/param[@name='options']"/></param>
     public async Task RemoveOnMuteEventListenerAsync(EventListener<Event> callback, EventListenerOptions? options = null)
     {
@@ -115,7 +115,7 @@ public class MediaStreamTrack : EventTarget
     }
 
     /// <summary>
-    /// Adds an <see cref="EventListener{Event}"/> for when the <see cref="MediaStreamTrack"/> object's source is live again after having been temporarily unable to provide data.
+    /// Adds an <see cref="EventListener{TEvent}"/> for when the <see cref="MediaStreamTrack"/> object's source is live again after having been temporarily unable to provide data.
     /// </summary>
     /// <param name="callback">Callback that will be invoked when the event is dispatched.</param>
     /// <param name="options"><inheritdoc cref="EventTarget.AddEventListenerAsync{TEvent}(string, EventListener{TEvent}?, AddEventListenerOptions?)" path="/param[@name='options']"/></param>
@@ -127,7 +127,7 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Removes the event listener from the event listener list if it has been parsed to <see cref="AddOnUnmuteEventListenerAsync"/> previously.
     /// </summary>
-    /// <param name="callback">The callback <see cref="EventListener{Event}"/> that you want to stop listening to events.</param>
+    /// <param name="callback">The callback <see cref="EventListener{TEvent}"/> that you want to stop listening to events.</param>
     /// <param name="options"><inheritdoc cref="EventTarget.RemoveEventListenerAsync{TEvent}(string, EventListener{TEvent}?, EventListenerOptions?)" path="/param[@name='options']"/></param>
     public async Task RemoveOnUnmuteEventListenerAsync(EventListener<Event> callback, EventListenerOptions? options = null)
     {
@@ -145,7 +145,7 @@ public class MediaStreamTrack : EventTarget
     }
 
     /// <summary>
-    /// Adds an <see cref="EventListener{Event}"/> for when the <see cref="MediaStreamTrack"/> object's source will no longer provide any data, either because the user revoked the permissions, or because the source device has been ejected, or because the remote peer permanently stopped sending data.
+    /// Adds an <see cref="EventListener{TEvent}"/> for when the <see cref="MediaStreamTrack"/> object's source will no longer provide any data, either because the user revoked the permissions, or because the source device has been ejected, or because the remote peer permanently stopped sending data.
     /// </summary>
     /// <param name="callback">Callback that will be invoked when the event is dispatched.</param>
     /// <param name="options"><inheritdoc cref="EventTarget.AddEventListenerAsync{TEvent}(string, EventListener{TEvent}?, AddEventListenerOptions?)" path="/param[@name='options']"/></param>
@@ -157,7 +157,7 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Removes the event listener from the event listener list if it has been parsed to <see cref="AddOnEndedEventListenerAsync"/> previously.
     /// </summary>
-    /// <param name="callback">The callback <see cref="EventListener{Event}"/> that you want to stop listening to events.</param>
+    /// <param name="callback">The callback <see cref="EventListener{TEvent}"/> that you want to stop listening to events.</param>
     /// <param name="options"><inheritdoc cref="EventTarget.RemoveEventListenerAsync{TEvent}(string, EventListener{TEvent}?, EventListenerOptions?)" path="/param[@name='options']"/></param>
     public async Task RemoveOnEndedEventListenerAsync(EventListener<Event> callback, EventListenerOptions? options = null)
     {
@@ -167,7 +167,7 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Creates a new <see cref="MediaStreamTrack"/> new the same source, but no associated device. After this it clones the state, capabilites, constraints, and settings.
     /// </summary>
-    /// <returns>A new <see cref="MediaStreamTrack"/></returns>
+    /// <returns>A new <see cref="MediaStreamTrack"/>.</returns>
     public async Task<MediaStreamTrack> CloneAsync()
     {
         IJSObjectReference jSInstance = await JSReference.InvokeAsync<IJSObjectReference>("clone");
