@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
+using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
@@ -13,7 +14,10 @@ public class MediaDevicesService : IMediaDevicesService
 
     public async Task<MediaDevices> GetMediaDevicesAsync()
     {
-        IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("navigator.mediaDevices.valueOf");
-        return await MediaDevices.CreateAsync(jSRuntime, jSInstance);
+        return await this.MemoizedTask(async () =>
+        {
+            IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("navigator.mediaDevices.valueOf");
+            return await MediaDevices.CreateAsync(jSRuntime, jSInstance);
+        });
     }
 }
