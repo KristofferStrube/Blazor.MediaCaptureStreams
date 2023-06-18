@@ -44,7 +44,7 @@ public class MediaTrackCapabilities
     public string[]? FacingMode { get; set; }
 
     /// <summary>
-    /// The User Agent may use cropping and downscaling to offer more resolution choices than this camera naturally produces. The reported sequence must list all the means the UA may employ to derive resolution choices for this camera. The value <see cref="VideoResizeMode.None"/> must be present, indicating the ability to constrain the UA from cropping and downscaling.
+    /// The User Agent may use cropping and downscaling to offer more resolution choices than this camera naturally produces. The reported sequence must list all the means the User Agent may employ to derive resolution choices for this camera. The value <see cref="VideoResizeMode.None"/> must be present, indicating the ability to constrain the UA from cropping and downscaling.
     /// </summary>
     [JsonPropertyName("resizeMode")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

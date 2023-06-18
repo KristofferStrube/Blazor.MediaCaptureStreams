@@ -33,7 +33,7 @@ public class ConstrainULong : UnionType
     }
 
     /// <summary>
-    /// Creates a <see cref="ConstrainULong"/> from a <see cref="ConstrainULongRange"/>.
+    /// Creates a <see cref="ConstrainULong"/> from a <see cref="ConstrainULongRange"/> explicitly instead of using the implicit converter.
     /// </summary>
     /// <param name="value">A <see cref="ConstrainULongRange"/>.</param>
     public static implicit operator ConstrainULong(ConstrainULongRange value)

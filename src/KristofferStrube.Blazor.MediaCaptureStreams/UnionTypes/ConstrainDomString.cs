@@ -37,6 +37,7 @@ public class ConstrainDomString : UnionType
     {
         return new(value);
     }
+
     /// <summary>
     /// Creates a <see cref="ConstrainDomString"/> from an array of <see cref="string"/>s.
     /// </summary>

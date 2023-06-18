@@ -8,8 +8,6 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams.Exceptions;
 /// </summary>
 public class OverconstrainedErrorException : DOMException
 {
-    public IJSObjectReference JSReference { get; }
-
     /// <summary>
     /// The name of the constraint associated with this error, or "" if no specific constraint name is revealed.
     /// </summary>
@@ -17,6 +15,9 @@ public class OverconstrainedErrorException : DOMException
 
     /// <inheritdoc />
     /// <param name="constraint">The constraint that was overconstrained.</param>
+    /// <param name="message"></param>
+    /// <param name="jSStackTrace"></param>
+    /// <param name="innerException"></param>
     public OverconstrainedErrorException(string constraint, string message, string? jSStackTrace, Exception innerException) : base(message, "OverconstrainedErrorException", jSStackTrace, innerException)
     {
         Constraint = constraint;

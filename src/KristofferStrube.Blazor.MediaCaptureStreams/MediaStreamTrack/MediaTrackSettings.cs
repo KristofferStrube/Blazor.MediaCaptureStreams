@@ -21,7 +21,7 @@ public class MediaTrackSettings
     public ulong Height { get; set; }
 
     /// <summary>
-    /// The exact aspect ratio (width in pixels divided by height in pixels, represented as a double rounded to the tenth decimal place) or aspect ratio range.
+    /// The exact aspect ratio (width in pixels divided by height in pixels, represented as a double rounded to the tenth decimal place).
     /// </summary>
     [JsonPropertyName("aspectRatio")]
     public double AspectRatio { get; set; }
@@ -42,7 +42,7 @@ public class MediaTrackSettings
     public VideoFacingMode? FacingMode { get; set; }
 
     /// <summary>
-    /// This is one of the members of <see cref="VideoResizeMode"/>. The members describe the means by which the resolution can be derived by the UA. In other words, whether the UA is allowed to use cropping and downscaling on the camera output.
+    /// This is one of the members of <see cref="VideoResizeMode"/>. The members describe the means by which the resolution can be derived by the User Agent. In other words, whether the UA is allowed to use cropping and downscaling on the camera output.
     /// </summary>
     [JsonPropertyName("resizeMode")]
     public VideoResizeMode? ResizeMode { get; set; }
@@ -90,13 +90,13 @@ public class MediaTrackSettings
     public ulong ChannelCount { get; set; }
 
     /// <summary>
-    /// The identifier of the device generating the content of the MediaStreamTrack.
+    /// The identifier of the device generating the content of the <see cref="MediaStreamTrack"/>.
     /// </summary>
     [JsonPropertyName("deviceId")]
     public string? DeviceId { get; set; }
 
     /// <summary>
-    /// The document-unique group identifier for the device generating the content of the MediaStreamTrack.
+    /// The document-unique group identifier for the device generating the content of the <see cref="MediaStreamTrack"/>.
     /// </summary>
     [JsonPropertyName("groupId")]
     public string? GroupId { get; set; }

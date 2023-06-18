@@ -192,13 +192,13 @@ public class MediaStreamTrack : EventTarget
     }
 
     /// <summary>
-    /// Returns the <see cref="MediaTrackConstraints"/> that were the argument to the most recent successful invocation of the <see cref="ApplyContraintsAsync(MediaTrackConstraints?)"/> method on the object, maintaining the order in which they were specified. Note that some of the <see cref="MediaTrackConstraints.Advanced"/> <see cref="MediaTrackConstraintSet"/> returned may not be currently satisfied. To check which <see cref="MediaTrackConstraintSet"/> are currently in effect, the application should use <see cref="GetSettingsAsync"/>. Instead of returning the exact constraints as described above, the UA MAY return a constraint set that has the identical effect in all situations as the applied constraints.
+    /// Returns the <see cref="MediaTrackConstraints"/> that were the argument to the most recent successful invocation of the <see cref="ApplyContraintsAsync(MediaTrackConstraints?)"/> method on the object, maintaining the order in which they were specified. Note that some of the <see cref="MediaTrackConstraints.Advanced"/> <see cref="MediaTrackConstraintSet"/> returned may not be currently satisfied. To check which <see cref="MediaTrackConstraintSet"/> are currently in effect, the application should use <see cref="GetSettingsAsync"/>. Instead of returning the exact constraints as described above, the User Agent may return a constraint set that has the identical effect in all situations as the applied constraints.
     /// </summary>
     /// <returns></returns>
     public async Task<MediaTrackConstraints> GetConstraintsAsync()
     {
         IJSObjectReference result = await JSReference.InvokeAsync<IJSObjectReference>("getConstraints");
-        MediaTrackConstraints newMediaTrackConstraints = new MediaTrackConstraints();
+        MediaTrackConstraints newMediaTrackConstraints = new();
         await MediaTrackConstraints.HydrateMediaTrackConstraints(newMediaTrackConstraints, JSRuntime, result);
         return newMediaTrackConstraints;
     }

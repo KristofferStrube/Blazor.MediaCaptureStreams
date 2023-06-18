@@ -49,7 +49,7 @@ public class MediaTrackConstraintSet
     public ConstrainVideoFacingMode? FacingMode { get; set; }
 
     /// <summary>
-    /// This is one of the members of <see cref="VideoResizeMode"/>. The members describe the means by which the resolution can be derived by the UA. In other words, whether the UA is allowed to use cropping and downscaling on the camera output.
+    /// This is one of the members of <see cref="VideoResizeMode"/>. The members describe the means by which the resolution can be derived by the User Agent. In other words, whether the UA is allowed to use cropping and downscaling on the camera output.
     /// </summary>
     /// <remarks>
     /// Note that <see cref="MediaStreamTrack.GetConstraintsAsync"/> may not return exactly the same string for strings not in this enum. This preserves the possibility of using a future version of WebIDL enum for this property.
@@ -127,15 +127,7 @@ public class MediaTrackConstraintSet
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ConstrainDomString? GroupId { get; set; }
 
-    /// <summary>
-    /// This method is used to hydrate a <see cref="MediaTrackConstraintSet"/> or a class that extends this from a <see cref="IJSObjectReference"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="hydrateObject">The object that will get its properties populated.</param>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">The reference to the JS object that the properties will be read from.</param>
-    /// <returns></returns>
-    public static async Task<T> HydrateMediaTrackConstraintSet<T>(T hydrateObject, IJSRuntime jSRuntime, IJSObjectReference jSReference) where T : MediaTrackConstraintSet
+    internal static async Task<T> HydrateMediaTrackConstraintSet<T>(T hydrateObject, IJSRuntime jSRuntime, IJSObjectReference jSReference) where T : MediaTrackConstraintSet
     {
         ValueReference reference = await ValueReference.CreateAsync(jSRuntime, jSReference);
         await SetConstrainULongProperty(reference, "width", (value) => hydrateObject.Width = new(value));

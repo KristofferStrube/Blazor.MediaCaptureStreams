@@ -20,16 +20,9 @@ public class MediaTrackConstraints : MediaTrackConstraintSet
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public MediaTrackConstraintSet[]? Advanced { get; set; }
 
-    /// <summary>
-    /// This method is used to hydrate a <see cref="MediaTrackConstraints"/> from a <see cref="IJSObjectReference"/>.
-    /// </summary>
-    /// <param name="hydrateObject">The object that will get its properties populated.</param>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">The reference to the JS object that the properties will be read from.</param>
-    /// <returns></returns>
-    public static async Task<MediaTrackConstraints> HydrateMediaTrackConstraints(MediaTrackConstraints hydrateObject, IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    internal static async Task<MediaTrackConstraints> HydrateMediaTrackConstraints(MediaTrackConstraints hydrateObject, IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        ValueReference advancedReference = new ValueReference(jSRuntime, jSReference, "advanced");
+        ValueReference advancedReference = new(jSRuntime, jSReference, "advanced");
         advancedReference.ValueMapper["array"] = async () => new TypedArray<IJSObjectReference>(jSRuntime, await advancedReference.GetValueAsync<IJSObjectReference>());
         if (await advancedReference.GetValueAsync() is TypedArray<IJSObjectReference> array)
         {
@@ -37,7 +30,7 @@ public class MediaTrackConstraints : MediaTrackConstraintSet
             List<MediaTrackConstraintSet> advanced = new((int)length);
             for (long i = 0; i < length; i++)
             {
-                MediaTrackConstraintSet advancedHydrateObject = new MediaTrackConstraintSet();
+                MediaTrackConstraintSet advancedHydrateObject = new();
                 advanced.Add(await HydrateMediaTrackConstraintSet(advancedHydrateObject, jSRuntime, await array.AtAsync(i)));
             }
         }
