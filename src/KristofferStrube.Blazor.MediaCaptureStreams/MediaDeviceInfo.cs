@@ -1,5 +1,4 @@
-﻿using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 

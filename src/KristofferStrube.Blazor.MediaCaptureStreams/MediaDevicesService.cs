@@ -5,7 +5,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// <inheritdoc cref="IMediaDevicesService"/>
 public class MediaDevicesService : IMediaDevicesService
 {
-    private Lazy<Task<MediaDevices>> mediaDevicesTask;
+    private readonly Lazy<Task<MediaDevices>> mediaDevicesTask;
 
     /// <summary>
     /// Constructs a new instance of the service.
