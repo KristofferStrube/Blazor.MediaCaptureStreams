@@ -8,6 +8,10 @@ using System.Text.Json;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
+/// <summary>
+/// The <see cref="MediaDevices"/> object is the entry point to the API used to examine and get access to media devices available to the User Agent.
+/// </summary>
+/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediadevices">See the API definition here</see> and <see href="https://www.w3.org/TR/mediacapture-streams/#mediadevices-interface-extensions">here</see>.</remarks>
 public class MediaDevices : EventTarget
 {
     private const string Constraint = "constraint";
@@ -75,7 +79,7 @@ public class MediaDevices : EventTarget
     /// Elements of this sequence that represent input devices will be of type <see cref="InputDeviceInfo"/> which extends <see cref="MediaDeviceInfo"/>
     /// </summary>
     /// <remarks>
-    /// If the user has not been asked for permission to access the microphones or the cameras by calling <see cref="GetUserMediaAsync(MediaStreamConstraints)"/> first then they will get a placeholder <see cref="MediaDeviceInfo"/> with that <see cref="MediaDeviceKind"/> specified but with empty labels and ids..
+    /// If the user has not been asked for permission to access the microphones or the cameras by calling <see cref="GetUserMediaAsync(MediaStreamConstraints)"/> first then they will get a placeholder <see cref="MediaDeviceInfo"/> with the relevant <see cref="MediaDeviceKind"/> specified but with empty labels and ids.
     /// </remarks>
     /// <returns>A sequence that will first contain all microphones with the default microphone first, then all cameras with the default camera first and then other devices with the first one being the default audio output device if applicable.</returns>
     public async Task<MediaDeviceInfo[]> EnumerateDevicesAsync()
@@ -101,7 +105,6 @@ public class MediaDevices : EventTarget
     /// Returns the constrainable properties known to the User Agent.
     /// A supported constrainable property will be a non-null value and any constrainable properties not supported by the User Agent will have a null value present in the returned object.
     /// </summary>
-    /// <returns></returns>
     public async Task<MediaTrackSupportedConstraints> GetSupportedConstraintsAsync()
     {
         return await JSReference.InvokeAsync<MediaTrackSupportedConstraints>("getSupportedConstraints");

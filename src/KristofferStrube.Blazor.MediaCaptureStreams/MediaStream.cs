@@ -9,7 +9,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// Each <see cref="MediaStream"/> can contain zero or more <see cref="MediaStreamTrack"/> objects. All tracks in a <see cref="MediaStream"/> are intended to be synchronized when rendered. This is not a hard requirement, since it might not be possible to synchronize tracks from sources that have different clocks. Different <see cref="MediaStream"/> objects do not need to be synchronized.<br />
 /// A <see cref="MediaStream"/> object has an input and an output that represent the combined input and output of all the object's tracks. The output of the <see cref="MediaStream"/> controls how the object is rendered, e.g., what is saved if the object is recorded to a file or what is displayed if the object is used in a video element. A single <see cref="MediaStream"/> object can be attached to multiple different outputs at the same time.
 /// </summary>
-/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediastream">See the API definition here</see></remarks>
+/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediastream">See the API definition here</see>.</remarks>
 public class MediaStream : EventTarget
 {
     private readonly Lazy<Task<IJSObjectReference>> mediaCaptureStreamsHelperTask;

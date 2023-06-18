@@ -6,7 +6,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// <summary>
 /// The track attribute represents the <see cref="MediaStreamTrack"/> object associated with the event.
 /// </summary>
-/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrackeventinit">See the API definition here</see></remarks>
+/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#dom-mediastreamtrackeventinit">See the API definition here</see>.</remarks>
 public class MediaStreamTrackEventInit : EventInit
 {
     /// <summary>

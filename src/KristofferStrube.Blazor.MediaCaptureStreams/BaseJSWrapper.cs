@@ -4,8 +4,14 @@ using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
+/// <summary>
+/// Base class for wrapping objects in the Blazor.MediaCaptureStreams library.
+/// </summary>
 public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
 {
+    /// <summary>
+    /// A lazily evaluated task that gives access to helper methods.
+    /// </summary>
     protected readonly Lazy<Task<IJSObjectReference>> helperTask;
 
     /// <inheritdoc/>
@@ -26,6 +32,10 @@ public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
         JSRuntime = jSRuntime;
     }
 
+    /// <summary>
+    /// Disposes the 
+    /// </summary>
+    /// <returns></returns>
     public async ValueTask DisposeAsync()
     {
         if (helperTask.IsValueCreated)
@@ -33,6 +43,7 @@ public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
             IJSObjectReference module = await helperTask.Value;
             await module.DisposeAsync();
         }
+        await JSReference.DisposeAsync();
         GC.SuppressFinalize(this);
     }
 }

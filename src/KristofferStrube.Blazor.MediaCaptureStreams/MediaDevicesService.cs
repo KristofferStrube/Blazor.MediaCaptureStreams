@@ -1,23 +1,28 @@
-﻿using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
+/// <inheritdoc cref="IMediaDevicesService"/>
 public class MediaDevicesService : IMediaDevicesService
 {
-    private IJSRuntime jSRuntime { get; }
+    private Lazy<Task<MediaDevices>> mediaDevicesTask;
 
+    /// <summary>
+    /// Constructs a new instance of the service.
+    /// </summary>
+    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     public MediaDevicesService(IJSRuntime jSRuntime)
     {
-        this.jSRuntime = jSRuntime;
-    }
-
-    public async Task<MediaDevices> GetMediaDevicesAsync()
-    {
-        return await this.MemoizedTask(async () =>
+        mediaDevicesTask = new(async () =>
         {
             IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("navigator.mediaDevices.valueOf");
             return await MediaDevices.CreateAsync(jSRuntime, jSInstance);
         });
+    }
+
+    /// <inheritdoc/>
+    public async Task<MediaDevices> GetMediaDevicesAsync()
+    {
+        return await mediaDevicesTask.Value;
     }
 }

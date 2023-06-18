@@ -7,7 +7,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// <summary>
 /// Each member of a <see cref="MediaTrackConstraintSet"/> corresponds to a constrainable property and specifies a subset of the property's valid <see cref="MediaTrackCapabilities"/> values. Applying a <see cref="MediaTrackConstraintSet"/> instructs the User Agent to restrict the settings of the corresponding constrainable properties to the specified values or ranges of values.
 /// </summary>
-/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackconstraintset">See the API definition here</see></remarks>
+/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackconstraintset">See the API definition here</see>.</remarks>
 public class MediaTrackConstraintSet
 {
     /// <summary>

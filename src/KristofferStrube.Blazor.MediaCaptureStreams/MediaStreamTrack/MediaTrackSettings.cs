@@ -5,7 +5,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// <summary>
 /// <see cref="MediaTrackSettings"/> represents the Settings of a <see cref="MediaStreamTrack"/> object.
 /// </summary>
-/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#media-track-settings">See the API definition here</see></remarks>
+/// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#media-track-settings">See the API definition here</see>.</remarks>
 public class MediaTrackSettings
 {
     /// <summary>
