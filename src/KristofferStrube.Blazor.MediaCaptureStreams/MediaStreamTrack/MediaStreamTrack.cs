@@ -18,7 +18,7 @@ public class MediaStreamTrack : EventTarget
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="MediaStreamTrack"/>.</param>
     /// <returns>A wrapper instance for a <see cref="MediaStreamTrack"/>.</returns>
-    public static Task<MediaStreamTrack> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public new static Task<MediaStreamTrack> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         return Task.FromResult(new MediaStreamTrack(jSRuntime, jSReference));
     }
@@ -199,7 +199,7 @@ public class MediaStreamTrack : EventTarget
     {
         IJSObjectReference result = await JSReference.InvokeAsync<IJSObjectReference>("getConstraints");
         MediaTrackConstraints newMediaTrackConstraints = new();
-        await MediaTrackConstraints.HydrateMediaTrackConstraints(newMediaTrackConstraints, JSRuntime, result);
+        await MediaTrackConstraints.HydrateMediaTrackConstraintsAsync(newMediaTrackConstraints, JSRuntime, result);
         return newMediaTrackConstraints;
     }
 

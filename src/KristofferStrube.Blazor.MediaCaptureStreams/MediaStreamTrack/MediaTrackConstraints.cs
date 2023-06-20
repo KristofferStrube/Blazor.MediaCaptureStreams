@@ -20,7 +20,7 @@ public class MediaTrackConstraints : MediaTrackConstraintSet
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public MediaTrackConstraintSet[]? Advanced { get; set; }
 
-    internal static async Task<MediaTrackConstraints> HydrateMediaTrackConstraints(MediaTrackConstraints hydrateObject, IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    internal static async Task<MediaTrackConstraints> HydrateMediaTrackConstraintsAsync(MediaTrackConstraints hydrateObject, IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         ValueReference advancedReference = new(jSRuntime, jSReference, "advanced");
         advancedReference.ValueMapper["array"] = async () => new TypedArray<IJSObjectReference>(jSRuntime, await advancedReference.GetValueAsync<IJSObjectReference>());
@@ -33,6 +33,25 @@ public class MediaTrackConstraints : MediaTrackConstraintSet
                 MediaTrackConstraintSet advancedHydrateObject = new();
                 advanced.Add(await HydrateMediaTrackConstraintSet(advancedHydrateObject, jSRuntime, await array.AtAsync(i)));
             }
+            hydrateObject.Advanced = advanced.ToArray();
+        }
+        return await HydrateMediaTrackConstraintSet(hydrateObject, jSRuntime, jSReference);
+    }
+
+    internal static MediaTrackConstraints HydrateMediaTrackConstraints(MediaTrackConstraints hydrateObject, IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference)
+    {
+        ValueReference advancedReference = new(jSRuntime, jSReference, "advanced");
+        advancedReference.ValueMapper["array"] = async () => new TypedArray<IJSObjectReference>(jSRuntime, await advancedReference.GetValueAsync<IJSObjectReference>());
+        if (await advancedReference.GetValueAsync() is TypedArray<IJSObjectReference> array)
+        {
+            long length = await array.GetLengthAsync();
+            List<MediaTrackConstraintSet> advanced = new((int)length);
+            for (long i = 0; i < length; i++)
+            {
+                MediaTrackConstraintSet advancedHydrateObject = new();
+                advanced.Add(await HydrateMediaTrackConstraintSet(advancedHydrateObject, jSRuntime, await array.AtAsync(i)));
+            }
+            hydrateObject.Advanced = advanced.ToArray();
         }
         return await HydrateMediaTrackConstraintSet(hydrateObject, jSRuntime, jSReference);
     }

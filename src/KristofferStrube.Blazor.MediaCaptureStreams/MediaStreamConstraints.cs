@@ -3,7 +3,7 @@
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
 /// <summary>
-/// <see cref="MediaStreamConstraints"/> is used to instruct the User Agent what sort of <see cref="MediaStreamTrack"/>s to include in the <see cref="MediaStream"/> returned by <see cref="MediaDevices.GetUserMediaAsync(KristofferStrube.Blazor.MediaCaptureStreams.MediaStreamConstraints)"/>.
+/// <see cref="MediaStreamConstraints"/> is used to instruct the User Agent what sort of <see cref="MediaStreamTrack"/>s to include in the <see cref="MediaStream"/> returned by <see cref="MediaDevices.GetUserMediaAsync(MediaStreamConstraints)"/>.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediastreamconstraints">See the API definition here</see>.</remarks>
 public class MediaStreamConstraints
