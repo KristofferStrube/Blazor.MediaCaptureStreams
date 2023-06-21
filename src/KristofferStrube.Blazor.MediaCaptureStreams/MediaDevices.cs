@@ -14,8 +14,6 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediadevices">See the API definition here</see> and <see href="https://www.w3.org/TR/mediacapture-streams/#mediadevices-interface-extensions">here</see>.</remarks>
 public class MediaDevices : EventTarget
 {
-    private const string Constraint = "constraint";
-
     private readonly Lazy<Task<IJSObjectReference>> mediaCaptureStreamsHelperTask;
     private readonly ErrorHandlingJSObjectReference? errorHandlingJSReference;
 
@@ -42,10 +40,10 @@ public class MediaDevices : EventTarget
         {
             errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSReference)
             {
-                ExtraErrorProperties = new string[] { Constraint }
+                ExtraErrorProperties = new string[] { "constraint" }
             };
             errorHandlingJSReference.ErrorMapper.TryAdd("OverconstrainedError", (jSError) => new OverconstrainedErrorException(
-                jSError.ExtensionData is not null ? jSError.ExtensionData.TryGetValue(Constraint, out JsonElement json) ? (json.GetString() ?? string.Empty) : string.Empty : string.Empty,
+                jSError.ExtensionData is not null ? jSError.ExtensionData.TryGetValue("constraint", out JsonElement json) ? (json.GetString() ?? string.Empty) : string.Empty : string.Empty,
                 jSError.Message,
                 jSError.Stack,
                 jSError.InnerException)

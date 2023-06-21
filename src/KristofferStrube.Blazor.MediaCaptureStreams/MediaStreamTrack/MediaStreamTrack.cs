@@ -1,6 +1,9 @@
 ﻿using KristofferStrube.Blazor.DOM;
+using KristofferStrube.Blazor.MediaCaptureStreams.Exceptions;
 using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
+using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
+using System.Text.Json;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
@@ -11,6 +14,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 public class MediaStreamTrack : EventTarget
 {
     private readonly Lazy<Task<IJSObjectReference>> mediaCaptureStreamsHelperTask;
+    private readonly ErrorHandlingJSObjectReference? errorHandlingJSReference;
 
     /// <summary>
     /// Constructs a wrapper instance for a given JS Instance of a <see cref="MediaStreamTrack"/>.
@@ -31,6 +35,19 @@ public class MediaStreamTrack : EventTarget
     protected internal MediaStreamTrack(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
     {
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
+        if (ErrorHandlingJSInterop.ErrorHandlingJSInteropHasBeenSetup)
+        {
+            errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSReference)
+            {
+                ExtraErrorProperties = new string[] { "constraint" }
+            };
+            errorHandlingJSReference.ErrorMapper.TryAdd("OverconstrainedError", (jSError) => new OverconstrainedErrorException(
+                jSError.ExtensionData is not null ? jSError.ExtensionData.TryGetValue("constraint", out JsonElement json) ? (json.GetString() ?? string.Empty) : string.Empty : string.Empty,
+                jSError.Message,
+                jSError.Stack,
+                jSError.InnerException)
+            );
+        }
     }
 
     /// <summary>
@@ -185,7 +202,6 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Returns the capabilites of the source that this <see cref="MediaStreamTrack"/>, the constrainable object, represents.
     /// </summary>
-    /// <returns></returns>
     public async Task<MediaTrackCapabilities> GetCapabilitiesAsync()
     {
         return await JSReference.InvokeAsync<MediaTrackCapabilities>("getCapabilities");
@@ -194,7 +210,6 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Returns the <see cref="MediaTrackConstraints"/> that were the argument to the most recent successful invocation of the <see cref="ApplyContraintsAsync(MediaTrackConstraints?)"/> method on the object, maintaining the order in which they were specified. Note that some of the <see cref="MediaTrackConstraints.Advanced"/> <see cref="MediaTrackConstraintSet"/> returned may not be currently satisfied. To check which <see cref="MediaTrackConstraintSet"/> are currently in effect, the application should use <see cref="GetSettingsAsync"/>. Instead of returning the exact constraints as described above, the User Agent may return a constraint set that has the identical effect in all situations as the applied constraints.
     /// </summary>
-    /// <returns></returns>
     public async Task<MediaTrackConstraints> GetConstraintsAsync()
     {
         IJSObjectReference result = await JSReference.InvokeAsync<IJSObjectReference>("getConstraints");
@@ -206,22 +221,23 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Returns the current <see cref="MediaTrackSettings"/> of all the constrainable properties of the object, whether they are platform defaults or have been set by the <see cref="ApplyContraintsAsync(MediaTrackConstraints?)"/> method. Note that a setting is a target value that complies with constraints, and therefore may differ from measured performance at times.
     /// </summary>
-    /// <returns></returns>
     public async Task<MediaTrackSettings> GetSettingsAsync()
     {
         return await JSReference.InvokeAsync<MediaTrackSettings>("getSettings");
     }
 
     /// <summary>
-    /// Applies the <paramref name="constraints"/> to the <see cref="MediaStreamTrack"/> using the <c>applyConstraints template method</c>.
+    /// Applies the <paramref name="constraints"/> to the <see cref="MediaStreamTrack"/> using the <c>applyConstraints template method</c>.<br />
+    /// If the applied constraints are too strict it will throw an <see cref="OverconstrainedErrorException"/>.
     /// </summary>
     /// <remarks>
     /// Read more about the <c>applyConstraints template method</c> <see href="https://www.w3.org/TR/mediacapture-streams/#dfn-applyconstraints-template-method">in the api specs.</see>
     /// </remarks>
     /// <param name="constraints"></param>
-    /// <returns></returns>
+    /// <exception cref="OverconstrainedErrorException" />
     public async Task ApplyContraintsAsync(MediaTrackConstraints? constraints = null)
     {
-        await JSReference.InvokeVoidAsync("applyConstraints", constraints);
+        IJSObjectReference jSReference = errorHandlingJSReference ?? JSReference;
+        await jSReference.InvokeVoidAsync("applyConstraints", constraints);
     }
 }

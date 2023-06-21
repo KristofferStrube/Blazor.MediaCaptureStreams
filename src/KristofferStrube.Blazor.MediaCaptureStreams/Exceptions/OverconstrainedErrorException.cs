@@ -1,5 +1,4 @@
 ﻿using KristofferStrube.Blazor.WebIDL.Exceptions;
-using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams.Exceptions;
 
