@@ -1,5 +1,6 @@
 ﻿using KristofferStrube.Blazor.DOM;
 using KristofferStrube.Blazor.DOM.Extensions;
+using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
 using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
 
@@ -26,8 +27,8 @@ public class MediaStreamTrackInProcess : MediaStreamTrack, IEventTargetInProcess
     /// <returns>A wrapper instance for a <see cref="MediaStreamTrackInProcess"/>.</returns>
     public async static Task<MediaStreamTrackInProcess> CreateAsync(IJSRuntime jSRuntime, IJSInProcessObjectReference jSReference)
     {
-        var helper = await jSRuntime.GetInProcessHelperAsync();
-        var DOMHelper = await Blazor.DOM.Extensions.IJSRuntimeExtensions.GetInProcessHelperAsync(jSRuntime);
+        var helper = await Extensions.IJSRuntimeExtensions.GetInProcessHelperAsync(jSRuntime);
+        var DOMHelper = await DOM.Extensions.IJSRuntimeExtensions.GetInProcessHelperAsync(jSRuntime);
         return new MediaStreamTrackInProcess(jSRuntime, helper, DOMHelper, jSReference);
     }
 
@@ -154,8 +155,8 @@ public class MediaStreamTrackInProcess : MediaStreamTrack, IEventTargetInProcess
     /// <inheritdoc cref="MediaStreamTrack.CloneAsync"/>
     public new async Task<MediaStreamTrackInProcess> CloneAsync()
     {
-        var helper = await JSRuntime.GetInProcessHelperAsync();
-        var DOMHelper = await Blazor.DOM.Extensions.IJSRuntimeExtensions.GetInProcessHelperAsync(JSRuntime);
+        var helper = await Extensions.IJSRuntimeExtensions.GetInProcessHelperAsync(JSRuntime);
+        var DOMHelper = await DOM.Extensions.IJSRuntimeExtensions.GetInProcessHelperAsync(JSRuntime);
 
         IJSInProcessObjectReference jSInstance = await JSReference.InvokeAsync<IJSInProcessObjectReference>("clone");
         return new(JSRuntime, helper, DOMHelper, jSInstance);
@@ -170,34 +171,9 @@ public class MediaStreamTrackInProcess : MediaStreamTrack, IEventTargetInProcess
     /// <inheritdoc cref="MediaStreamTrack.GetCapabilitiesAsync"/>
     public MediaTrackCapabilities GetCapabilities() => JSReference.Invoke<MediaTrackCapabilities>("getCapabilities");
 
-    /// <inheritdoc cref="MediaStreamTrack.GetConstraintsAsync"/>
-    public MediaTrackConstraints GetConstraints()
-    {
-        IJSObjectReference result = JSReference.Invoke<IJSObjectReference>("getConstraints");
-        MediaTrackConstraints newMediaTrackConstraints = new();
-        MediaTrackConstraints.HydrateMediaTrackConstraintsAsync(newMediaTrackConstraints, JSRuntime, result);
-        return newMediaTrackConstraints;
-    }
-
     /// <summary>
     /// Returns the current <see cref="MediaTrackSettings"/> of all the constrainable properties of the object, whether they are platform defaults or have been set by the <see cref="ApplyContraintsAsync(MediaTrackConstraints?)"/> method. Note that a setting is a target value that complies with constraints, and therefore may differ from measured performance at times.
     /// </summary>
     /// <returns></returns>
-    public async Task<MediaTrackSettings> GetSettingsAsync()
-    {
-        return await JSReference.InvokeAsync<MediaTrackSettings>("getSettings");
-    }
-
-    /// <summary>
-    /// Applies the <paramref name="constraints"/> to the <see cref="MediaStreamTrack"/> using the <c>applyConstraints template method</c>.
-    /// </summary>
-    /// <remarks>
-    /// Read more about the <c>applyConstraints template method</c> <see href="https://www.w3.org/TR/mediacapture-streams/#dfn-applyconstraints-template-method">in the api specs.</see>
-    /// </remarks>
-    /// <param name="constraints"></param>
-    /// <returns></returns>
-    public async Task ApplyContraintsAsync(MediaTrackConstraints? constraints = null)
-    {
-        await JSReference.InvokeVoidAsync("applyConstraints", constraints);
-    }
+    public MediaTrackSettings GetSettings() => JSReference.Invoke<MediaTrackSettings>("getSettings");
 }

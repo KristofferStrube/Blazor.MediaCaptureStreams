@@ -185,7 +185,6 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Returns the capabilites of the source that this <see cref="MediaStreamTrack"/>, the constrainable object, represents.
     /// </summary>
-    /// <returns></returns>
     public async Task<MediaTrackCapabilities> GetCapabilitiesAsync()
     {
         return await JSReference.InvokeAsync<MediaTrackCapabilities>("getCapabilities");
@@ -194,7 +193,6 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Returns the <see cref="MediaTrackConstraints"/> that were the argument to the most recent successful invocation of the <see cref="ApplyContraintsAsync(MediaTrackConstraints?)"/> method on the object, maintaining the order in which they were specified. Note that some of the <see cref="MediaTrackConstraints.Advanced"/> <see cref="MediaTrackConstraintSet"/> returned may not be currently satisfied. To check which <see cref="MediaTrackConstraintSet"/> are currently in effect, the application should use <see cref="GetSettingsAsync"/>. Instead of returning the exact constraints as described above, the User Agent may return a constraint set that has the identical effect in all situations as the applied constraints.
     /// </summary>
-    /// <returns></returns>
     public async Task<MediaTrackConstraints> GetConstraintsAsync()
     {
         IJSObjectReference result = await JSReference.InvokeAsync<IJSObjectReference>("getConstraints");
@@ -206,7 +204,6 @@ public class MediaStreamTrack : EventTarget
     /// <summary>
     /// Returns the current <see cref="MediaTrackSettings"/> of all the constrainable properties of the object, whether they are platform defaults or have been set by the <see cref="ApplyContraintsAsync(MediaTrackConstraints?)"/> method. Note that a setting is a target value that complies with constraints, and therefore may differ from measured performance at times.
     /// </summary>
-    /// <returns></returns>
     public async Task<MediaTrackSettings> GetSettingsAsync()
     {
         return await JSReference.InvokeAsync<MediaTrackSettings>("getSettings");
@@ -218,8 +215,7 @@ public class MediaStreamTrack : EventTarget
     /// <remarks>
     /// Read more about the <c>applyConstraints template method</c> <see href="https://www.w3.org/TR/mediacapture-streams/#dfn-applyconstraints-template-method">in the api specs.</see>
     /// </remarks>
-    /// <param name="constraints"></param>
-    /// <returns></returns>
+    /// <param name="constraints">The constraints that will be applied.</param>
     public async Task ApplyContraintsAsync(MediaTrackConstraints? constraints = null)
     {
         await JSReference.InvokeVoidAsync("applyConstraints", constraints);
