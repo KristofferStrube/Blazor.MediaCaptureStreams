@@ -23,7 +23,7 @@ public class MediaDevices : EventTarget
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="MediaDevices"/>.</param>
     /// <returns>A wrapper instance for a <see cref="MediaDevices"/>.</returns>
-    public static Task<MediaDevices> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public new static Task<MediaDevices> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         return Task.FromResult(new MediaDevices(jSRuntime, jSReference));
     }
@@ -38,7 +38,7 @@ public class MediaDevices : EventTarget
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
         if (ErrorHandlingJSInterop.ErrorHandlingJSInteropHasBeenSetup)
         {
-            errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSReference)
+            errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSRuntime, jSReference)
             {
                 ExtraErrorProperties = new string[] { "constraint" }
             };
@@ -90,7 +90,7 @@ public class MediaDevices : EventTarget
                 .Range(0, length)
                 .Select(async i =>
                     {
-                        ValueReference reference = new ValueReference(JSRuntime, devices, i);
+                        ValueReference reference = new(JSRuntime, devices, i);
                         reference.ValueMapper["mediadeviceinfo"] = async () => await MediaDeviceInfo.CreateAsync(JSRuntime, await reference.GetValueAsync<IJSObjectReference>());
                         reference.ValueMapper["inputdeviceinfo"] = async () => await InputDeviceInfo.CreateAsync(JSRuntime, await reference.GetValueAsync<IJSObjectReference>());
                         return (MediaDeviceInfo)(await reference.GetValueAsync())!;

@@ -20,7 +20,7 @@ public class MediaStream : EventTarget
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="MediaStream"/>.</param>
     /// <returns>A wrapper instance for a <see cref="MediaStream"/>.</returns>
-    public static Task<MediaStream> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public new static Task<MediaStream> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         return Task.FromResult(new MediaStream(jSRuntime, jSReference));
     }

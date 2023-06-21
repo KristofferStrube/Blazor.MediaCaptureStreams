@@ -22,7 +22,7 @@ public class MediaStreamTrack : EventTarget
     /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
     /// <param name="jSReference">A JS reference to an existing <see cref="MediaStreamTrack"/>.</param>
     /// <returns>A wrapper instance for a <see cref="MediaStreamTrack"/>.</returns>
-    public static Task<MediaStreamTrack> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public new static Task<MediaStreamTrack> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
         return Task.FromResult(new MediaStreamTrack(jSRuntime, jSReference));
     }
@@ -37,7 +37,7 @@ public class MediaStreamTrack : EventTarget
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
         if (ErrorHandlingJSInterop.ErrorHandlingJSInteropHasBeenSetup)
         {
-            errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSReference)
+            errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSRuntime, jSReference)
             {
                 ExtraErrorProperties = new string[] { "constraint" }
             };
