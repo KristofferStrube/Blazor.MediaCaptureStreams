@@ -37,22 +37,4 @@ public class MediaTrackConstraints : MediaTrackConstraintSet
         }
         return await HydrateMediaTrackConstraintSet(hydrateObject, jSRuntime, jSReference);
     }
-
-    internal static MediaTrackConstraints HydrateMediaTrackConstraints(MediaTrackConstraints hydrateObject, IJSRuntime jSRuntime, IJSInProcessObjectReference inProcessHelper, IJSInProcessObjectReference jSReference)
-    {
-        ValueReference advancedReference = new(jSRuntime, jSReference, "advanced");
-        advancedReference.ValueMapper["array"] = async () => new TypedArray<IJSObjectReference>(jSRuntime, await advancedReference.GetValueAsync<IJSObjectReference>());
-        if (await advancedReference.GetValueAsync() is TypedArray<IJSObjectReference> array)
-        {
-            long length = await array.GetLengthAsync();
-            List<MediaTrackConstraintSet> advanced = new((int)length);
-            for (long i = 0; i < length; i++)
-            {
-                MediaTrackConstraintSet advancedHydrateObject = new();
-                advanced.Add(await HydrateMediaTrackConstraintSet(advancedHydrateObject, jSRuntime, await array.AtAsync(i)));
-            }
-            hydrateObject.Advanced = advanced.ToArray();
-        }
-        return await HydrateMediaTrackConstraintSet(hydrateObject, jSRuntime, jSReference);
-    }
 }
