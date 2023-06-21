@@ -9,34 +9,34 @@ A Blazor wrapper for the [Media Capture and Streams](https://www.w3.org/TR/media
 
 The API standardizes ways to request access to local multimedia devices, such as microphones or video cameras. This also includes the MediaStream API, which provides the means to control where multimedia stream data is consumed, and provides some information and configuration options for the devices that produce the media. This project implements a wrapper around the API for Blazor so that we can easily and safely interact with the media streams of the browser.
 
-## Demo
+# Demo
 The sample project can be demoed at https://kristofferstrube.github.io/Blazor.MediaCaptureStreams/
 
 On each page, you can find the corresponding code for the example in the top right corner.
 
 On the [API Coverage Status](https://kristofferstrube.github.io/Blazor.MediaCaptureStreams/Status) page you can see how much of the WebIDL specs this wrapper has covered.
 
-## Getting Started
+# Getting Started
 ### Prerequisites
 You need to install .NET 7.0 or newer to use the library.
 
 [Download .NET 7](https://dotnet.microsoft.com/download/dotnet/7.0)
 
-### Installation
+## Installation
 You can install the package via NuGet with the Package Manager in your IDE or alternatively using the command line:
 ```bash
 dotnet add package KristofferStrube.Blazor.MediaCaptureStreams
 ```
 
-## Usage
+# Usage
 The package can be used in Blazor WebAssembly and Blazor Server projects.
-### Import
+## Import
 You need to reference the package in order to use it in your pages. This can be done in `_Import.razor` by adding the following.
 ```razor
 @using KristofferStrube.Blazor.MediaCaptureStreams
 ```
 
-### Add to service collection
+## Add to service collection
 The library has one service which is the `IMediaDevicesService` which can be used to access the `MediaDevices` of the current browser context. An easy way to make the service available on all your pages is by registering it in the `IServiceCollection` so that it can be dependency injected in the pages that need it. This is done in `Program.cs` by using our extension `AddMediaDevicesService()` before you build the host like we do in the following code block. If you use Blazor WASM you also need to invoke the `SetupErrorHandlingJSInterop()` extension on the `IServiceProvider` after building the host but before running like do we here:
 ```csharp
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -56,7 +56,7 @@ await app.Services.SetupErrorHandlingJSInterop();
 await app.RunAsync();
 ```
 
-### Inject in page
+## Inject in page
 Then the service can be injected into a page
 ```razor
 @inject IMediaDevicesService MediaDevicesService;
@@ -117,10 +117,10 @@ await firstVideoTrack.ApplyContraintsAsync(new MediaTrackConstraints()
 
 If we had not checked the capabilities of the track before setting its values we could potentially have set some values outside the valid range. If we did this we would get an `OverConstrainedException` that we could catch as we did with the more general `WebIDLException` in the previous sample.
 
-## Issues
+# Issues
 Feel free to open issues on the repository if you find any errors with the package or have wishes for features.
 
-## Related repositories
+# Related repositories
 This project uses the *Blazor.WebIDL* package to make error handling JSInterop and it uses the *Blazor.DOM* package to listen to events from the *EventTarget*'s in the package like `MediaDevices`, `MediaStream`, and `MediaStreamTrack`.
 - https://github.com/KristofferStrube/Blazor.WebIDL
 - https://github.com/KristofferStrube/Blazor.DOM
