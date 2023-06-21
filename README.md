@@ -17,7 +17,7 @@ On each page, you can find the corresponding code for the example in the top rig
 On the [API Coverage Status](https://kristofferstrube.github.io/Blazor.MediaCaptureStreams/Status) page you can see how much of the WebIDL specs this wrapper has covered.
 
 # Getting Started
-### Prerequisites
+## Prerequisites
 You need to install .NET 7.0 or newer to use the library.
 
 [Download .NET 7](https://dotnet.microsoft.com/download/dotnet/7.0)
