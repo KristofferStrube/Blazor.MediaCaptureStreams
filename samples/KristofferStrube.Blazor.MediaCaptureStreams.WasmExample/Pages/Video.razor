@@ -17,7 +17,7 @@
 {
     <p style="color: red;">@errorMessage</p>
 }
-@if (mediaStream is null)
+@if (videoStreamTrack is null)
 {
     <button class="btn btn-primary" @onclick="OpenVideo">Load Camera</button>
 }
@@ -41,12 +41,12 @@ else
 
 @code {
     private MediaDevices mediaDevices = default!;
-    private MediaStream? mediaStream;
     private MediaStreamTrack? videoStreamTrack;
     private string? error;
     private ElementReference videoElement;
     private List<(string label, string id)> videoOptions = new();
     private string? selectedVideoSource;
+    private string? shownVideoSource;
     private double? frameRate;
     private double minimalFrameRate;
     private double maximumFrameRate;
@@ -62,8 +62,6 @@ else
         {
             await LoadMediaStream();
 
-            if (mediaStream is null) return;
-
             var deviceInfos = await mediaDevices.EnumerateDevicesAsync();
             videoOptions.Clear();
             foreach (var device in deviceInfos)
@@ -73,14 +71,17 @@ else
                     videoOptions.Add((await device.GetLabelAsync(), await device.GetDeviceIdAsync()));
                 }
             }
+            error = null;
         }
         catch (WebIDLException ex)
         {
             error = $"{ex.GetType().Name}: {ex.Message}";
+            await StopVideoTrack();
         }
         catch (Exception ex)
         {
             error = $"{ex.GetType().Name}: {ex.Message}";
+            await StopVideoTrack();
         }
     }
 
@@ -94,9 +95,9 @@ else
                     FrameRate = frameRate is { } setFrameRate ? new ConstrainDoubleRange() { Exact = setFrameRate } : frameRate,
                     DeviceId = selectedVideoSource is null ? null : new ConstrainDomString(selectedVideoSource)
                 };
-            if (videoStreamTrack is null)
+            if (videoStreamTrack is null || shownVideoSource != selectedVideoSource)
             {
-                mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints });
+                var mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints });
                 var videoTracks = await mediaStream.GetVideoTracksAsync();
                 videoStreamTrack = videoTracks.FirstOrDefault();
                 if (videoStreamTrack is not null)
@@ -106,6 +107,7 @@ else
                     maximumFrameRate = capabilities.FrameRate?.Max ?? 0;
                     frameRate = (maximumFrameRate + minimalFrameRate) / 2.0;
                     selectedVideoSource = capabilities.DeviceId;
+                    shownVideoSource = selectedVideoSource;
                 }
 
                 StateHasChanged();
@@ -121,26 +123,23 @@ else
         catch (OverconstrainedErrorException ex)
         {
             error = $"The following constraint was overconstrained: {ex.Constraint}";
-            frameRate = null;
             await StopVideoTrack();
         }
         catch (WebIDLException ex)
         {
             error = $"{ex.GetType().Name}: {ex.Message}";
-            frameRate = null;
             await StopVideoTrack();
         }
     }
 
     async Task StopVideoTrack()
     {
-        if (mediaStream is null) return;
-        var videoTrack = (await mediaStream.GetVideoTracksAsync()).FirstOrDefault();
-        if (videoTrack is not null)
+        if (videoStreamTrack is not null)
         {
-            await videoTrack.StopAsync();
+            await videoStreamTrack.StopAsync();
         }
-        mediaStream = null;
+        videoStreamTrack = null;
+        frameRate = null;
     }
 
     public async ValueTask DisposeAsync()
