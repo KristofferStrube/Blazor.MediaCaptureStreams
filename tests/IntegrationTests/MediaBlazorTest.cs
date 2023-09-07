@@ -3,6 +3,7 @@ using Microsoft.Playwright;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams.IntegrationTests;
 
+[TestFixture]
 public class MediaBlazorTest
 {
     private readonly WebApplicationFactory<KristofferStrube.Blazor.MediacaptureStreams.HostedTestPages.Server.Program> webApplicationFactory = new();
