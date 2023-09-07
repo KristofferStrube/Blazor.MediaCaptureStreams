@@ -1,0 +1,25 @@
+﻿@page "/MediaDevices/GetUserMedia/ReturnsAudioMediaStream"
+@inject IMediaDevicesService MediaDevicesService
+
+<span data-testid="result">@result</span>
+
+@code {
+    private string result = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
+            await mediaDevices.GetUserMediaAsync(new() { Audio = true });
+            result = "success";
+        }
+        catch (Exception e)
+        {
+            result = e.Message;
+        }
+        StateHasChanged();
+    }
+}
