@@ -36,7 +36,7 @@ public class MediaDevices : EventTarget
     protected MediaDevices(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
     {
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
-        if (ErrorHandlingJSInterop.ErrorHandlingJSInteropHasBeenSetup)
+        if (jSRuntime is not IJSInProcessRuntime || ErrorHandlingJSInterop.ErrorHandlingJSInteropHasBeenSetup)
         {
             errorHandlingJSReference = new ErrorHandlingJSObjectReference(jSRuntime, jSReference)
             {

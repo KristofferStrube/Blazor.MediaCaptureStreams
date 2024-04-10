@@ -1,16 +1,27 @@
-﻿namespace KristofferStrube.Blazor.MediaCaptureStreams.IntegrationTests;
+﻿using KristofferStrube.Blazor.WebIDL.Exceptions;
+
+namespace KristofferStrube.Blazor.MediaCaptureStreams.IntegrationTests;
 
 public class MediaDevicesNotSupportedTest : MediaBlazorTest
 {
-    protected override string[] Args => Array.Empty<string>(); 
+    protected override string[] Args => [];
 
     [Test]
     public async Task GetUserMedia_Throws_NotSupportedErrorException_WhenNotSupported()
     {
+        // Arrange
+        AfterRenderAsync = async () =>
+        {
+            MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
+            MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Audio = true });
+            MediaStreamTrack[] videoTracks = await mediaStream.GetVideoTracksAsync();
+            return videoTracks.Length;
+        };
+
         // Act
-        await Page.GotoAsync(RootUri.AbsoluteUri + "/MediaDevices/GetUserMedia/ReturnsAudioMediaStream?getAudio=true");
+        await DoneLoadingPageAsync();
 
         // Assert
-        await Expect(Page.GetByTestId("result")).ToHaveTextAsync("NotSupportedErrorException");
+        Assert.That(EvaluationContext.Exception, Is.InstanceOf<NotSupportedErrorException>());
     }
 }

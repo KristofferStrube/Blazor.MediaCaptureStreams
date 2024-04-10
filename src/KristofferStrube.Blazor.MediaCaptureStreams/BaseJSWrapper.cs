@@ -33,7 +33,7 @@ public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
     }
 
     /// <summary>
-    /// Disposes the 
+    /// Disposes the underlying js object reference.
     /// </summary>
     /// <returns></returns>
     public async ValueTask DisposeAsync()
