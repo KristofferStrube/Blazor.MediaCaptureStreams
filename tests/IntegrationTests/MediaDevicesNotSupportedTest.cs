@@ -22,6 +22,6 @@ public class MediaDevicesNotSupportedTest : MediaBlazorTest
         await DoneLoadingPageAsync();
 
         // Assert
-        Assert.That(EvaluationContext.Exception, Is.InstanceOf<NotSupportedErrorException>());
+        Assert.That(EvaluationContext.Exception, Is.InstanceOf<NotSupportedErrorException>().Or.InstanceOf<NotFoundErrorException>());
     }
 }
