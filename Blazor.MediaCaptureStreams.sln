@@ -7,6 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KristofferStrube.Blazor.Med
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KristofferStrube.Blazor.MediaCaptureStreams.WasmExample", "samples\KristofferStrube.Blazor.MediaCaptureStreams.WasmExample\KristofferStrube.Blazor.MediaCaptureStreams.WasmExample.csproj", "{78DF92DF-FAA4-44A5-8357-D931F0E56AAF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "tests\IntegrationTests\IntegrationTests.csproj", "{C2D2DA0F-81A0-4AC0-86BD-4F9806EEBB5E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{33733603-EC0E-45DC-852E-23502F1BB155}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorServer", "tests\BlazorServer\BlazorServer.csproj", "{691244C2-4262-44AC-BB45-7C076BF06FD9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +27,21 @@ Global
 		{78DF92DF-FAA4-44A5-8357-D931F0E56AAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78DF92DF-FAA4-44A5-8357-D931F0E56AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78DF92DF-FAA4-44A5-8357-D931F0E56AAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2D2DA0F-81A0-4AC0-86BD-4F9806EEBB5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2D2DA0F-81A0-4AC0-86BD-4F9806EEBB5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2D2DA0F-81A0-4AC0-86BD-4F9806EEBB5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2D2DA0F-81A0-4AC0-86BD-4F9806EEBB5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{691244C2-4262-44AC-BB45-7C076BF06FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{691244C2-4262-44AC-BB45-7C076BF06FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{691244C2-4262-44AC-BB45-7C076BF06FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{691244C2-4262-44AC-BB45-7C076BF06FD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C2D2DA0F-81A0-4AC0-86BD-4F9806EEBB5E} = {33733603-EC0E-45DC-852E-23502F1BB155}
+		{691244C2-4262-44AC-BB45-7C076BF06FD9} = {33733603-EC0E-45DC-852E-23502F1BB155}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED852F74-EBA5-48B9-AEB3-EC4C1AC847F7}

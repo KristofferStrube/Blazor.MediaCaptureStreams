@@ -12,14 +12,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         # Checkout the code
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v4
 
-        # Install .NET 7.0 SDK
-        - name: Setup .NET 7 preview
-          uses: actions/setup-dotnet@v1
+        # Install .NET 8.0 SDK
+        - name: Setup .NET 8 preview
+          uses: actions/setup-dotnet@v3
           with:
-            dotnet-version: '7.0.x'
+            dotnet-version: '8.0.x'
             include-prerelease: true
+
+        # Build 
+        - name: Build
+          run: dotnet build
+
+        # Install PlayWright
+        - name: Install PlayWright
+          run: pwsh tests/IntegrationTests/bin/Debug/net8.0/playwright.ps1 install --with-deps
+
+        # Run tests 
+        - name: Test
+          run: dotnet test
 
         # Generate the website
         - name: Publish
