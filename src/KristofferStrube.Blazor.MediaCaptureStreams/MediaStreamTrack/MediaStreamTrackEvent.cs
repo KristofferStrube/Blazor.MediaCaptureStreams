@@ -11,12 +11,21 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediastreamtrackevent">See the API definition here</see>.</remarks>
 public class MediaStreamTrackEvent : Event, IJSCreatable<MediaStreamTrackEvent>
 {
-    private readonly Lazy<Task<MediaStreamTrack>> trackTask;
+    /// <summary>
+    /// A lazily loaded task that evaluates to a helper module instance from the Blazor.MediaCaptureStreams library.
+    /// </summary>
+    protected readonly Lazy<Task<IJSObjectReference>> mediaCaptureStreamsHelperTask;
 
     /// <inheritdoc/>
-    public static new Task<MediaStreamTrackEvent> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    public static new async Task<MediaStreamTrackEvent> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        return Task.FromResult(new MediaStreamTrackEvent(jSRuntime, jSReference));
+        return await CreateAsync(jSRuntime, jSReference, new());
+    }
+
+    /// <inheritdoc/>
+    public static new Task<MediaStreamTrackEvent> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        return Task.FromResult(new MediaStreamTrackEvent(jSRuntime, jSReference, options));
     }
 
     /// <summary>
@@ -29,22 +38,13 @@ public class MediaStreamTrackEvent : Event, IJSCreatable<MediaStreamTrackEvent>
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("constructMediaStreamTrackEvent", type, eventInitDict);
-        return new(jSRuntime, jSInstance);
+        return new(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
-    /// <summary>
-    /// Creates a new <see cref="MediaStreamTrackEvent"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing JS instance that should be wrapped.</param>
-    protected MediaStreamTrackEvent(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
+    /// <inheritdoc cref="CreateAsync(IJSRuntime, IJSObjectReference, CreationOptions)"/>
+    protected MediaStreamTrackEvent(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
     {
-        trackTask = new(async () =>
-        {
-            IJSObjectReference helper = await jSRuntime.GetHelperAsync();
-            IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", JSReference, "track");
-            return new MediaStreamTrack(JSRuntime, jSInstance);
-        });
+        mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
     }
 
     /// <summary>
@@ -53,6 +53,20 @@ public class MediaStreamTrackEvent : Event, IJSCreatable<MediaStreamTrackEvent>
     /// <returns>A memoized instance of a <see cref="MediaStreamTrack"/>.</returns>
     public async Task<MediaStreamTrack> GetTrackAsync()
     {
-        return await trackTask.Value;
+        IJSObjectReference helper = await mediaCaptureStreamsHelperTask.Value;
+        IJSObjectReference jSInstance = await helper.InvokeAsync<IJSObjectReference>("getAttribute", JSReference, "track");
+        return new MediaStreamTrack(JSRuntime, jSInstance, new() { DisposesJSReference = true });
+    }
+
+    /// <inheritdoc/>
+    public new async ValueTask DisposeAsync()
+    {
+        if (mediaCaptureStreamsHelperTask.IsValueCreated)
+        {
+            IJSObjectReference module = await mediaCaptureStreamsHelperTask.Value;
+            await module.DisposeAsync();
+        }
+        await base.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 }

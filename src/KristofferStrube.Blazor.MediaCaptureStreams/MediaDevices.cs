@@ -12,28 +12,29 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// The <see cref="MediaDevices"/> object is the entry point to the API used to examine and get access to media devices available to the User Agent.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediadevices">See the API definition here</see> and <see href="https://www.w3.org/TR/mediacapture-streams/#mediadevices-interface-extensions">here</see>.</remarks>
-public class MediaDevices : EventTarget
+public class MediaDevices : EventTarget, IJSCreatable<MediaDevices>
 {
-    private readonly Lazy<Task<IJSObjectReference>> mediaCaptureStreamsHelperTask;
+    /// <summary>
+    /// A lazily loaded task that evaluates to a helper module instance from the Blazor.MediaCaptureStreams library.
+    /// </summary>
+    protected readonly Lazy<Task<IJSObjectReference>> mediaCaptureStreamsHelperTask;
+
     private readonly ErrorHandlingJSObjectReference? errorHandlingJSReference;
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="MediaDevices"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="MediaDevices"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="MediaDevices"/>.</returns>
-    public new static Task<MediaDevices> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    /// <inheritdoc/>
+    public static new async Task<MediaDevices> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        return Task.FromResult(new MediaDevices(jSRuntime, jSReference));
+        return await CreateAsync(jSRuntime, jSReference, new());
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="MediaDevices"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="MediaDevices"/>.</param>
-    protected MediaDevices(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
+    /// <inheritdoc/>
+    public static new Task<MediaDevices> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        return Task.FromResult(new MediaDevices(jSRuntime, jSReference, options));
+    }
+
+    /// <inheritdoc cref="CreateAsync(IJSRuntime, IJSObjectReference, CreationOptions)"/>
+    protected MediaDevices(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
     {
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
         if (jSRuntime is not IJSInProcessRuntime || ErrorHandlingJSInterop.ErrorHandlingJSInteropHasBeenSetup)
@@ -138,5 +139,17 @@ public class MediaDevices : EventTarget
         IJSObjectReference jSReference = errorHandlingJSReference ?? JSReference;
         IJSObjectReference jSInstance = await jSReference.InvokeAsync<IJSObjectReference>("getUserMedia", constraints);
         return await MediaStream.CreateAsync(JSRuntime, jSInstance);
+    }
+
+    /// <inheritdoc/>
+    public new async ValueTask DisposeAsync()
+    {
+        if (mediaCaptureStreamsHelperTask.IsValueCreated)
+        {
+            IJSObjectReference module = await mediaCaptureStreamsHelperTask.Value;
+            await module.DisposeAsync();
+        }
+        await base.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using KristofferStrube.Blazor.WebIDL;
+using Microsoft.JSInterop;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
@@ -6,25 +7,22 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// A <see cref="MediaDeviceInfo"/> interface gives access to the basic information of the input or output device it represents. It may be extended by <see cref="InputDeviceInfo"/> specifying that it is an input device.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#device-info">See the API definition here</see>.</remarks>
-public class MediaDeviceInfo : BaseJSWrapper
+public class MediaDeviceInfo : BaseJSWrapper, IJSCreatable<MediaDeviceInfo>
 {
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="MediaDeviceInfo"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="MediaDeviceInfo"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="MediaDeviceInfo"/>.</returns>
-    public static Task<MediaDeviceInfo> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    /// <inheritdoc/>
+    public static async Task<MediaDeviceInfo> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        return Task.FromResult(new MediaDeviceInfo(jSRuntime, jSReference));
+        return await CreateAsync(jSRuntime, jSReference, new());
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="MediaDeviceInfo"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="MediaDeviceInfo"/>.</param>
-    protected MediaDeviceInfo(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference) { }
+    /// <inheritdoc/>
+    public static Task<MediaDeviceInfo> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        return Task.FromResult(new MediaDeviceInfo(jSRuntime, jSReference, options));
+    }
+
+    /// <inheritdoc cref="CreateAsync(IJSRuntime, IJSObjectReference, CreationOptions)"/>
+    protected MediaDeviceInfo(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options) { }
 
     /// <summary>
     /// Returns the identifier of the represented device. The device must be uniquely identified by its identifier and its kind.
