@@ -2,6 +2,7 @@
 @using System.Text.Json.Serialization;
 @inject IMediaDevicesService MediaDevicesService
 @inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
 
 <PageTitle>Media Capture and Streams - Device Lister</PageTitle>
 
@@ -67,6 +68,7 @@ else
                         id: await info.GetDeviceIdAsync()
                     )
                 );
+                await info.DisposeAsync();
             }
         }
         catch (Exception)
@@ -81,7 +83,7 @@ else
 
         try
         {
-            var mediaStream = await mediaDevices.GetUserMediaAsync(
+            await using MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(
                 new MediaStreamConstraints()
                     {
                         Audio = true,
@@ -89,12 +91,12 @@ else
                     }
             );
 
-            var audioTrack = (await mediaStream.GetAudioTracksAsync()).FirstOrDefault();
+            await using MediaStreamTrack? audioTrack = (await mediaStream.GetAudioTracksAsync()).FirstOrDefault();
             if (audioTrack is not null)
             {
                 await audioTrack.StopAsync();
             }
-            var videoTrack = (await mediaStream.GetVideoTracksAsync()).FirstOrDefault();
+            await using MediaStreamTrack? videoTrack = (await mediaStream.GetVideoTracksAsync()).FirstOrDefault();
             if (videoTrack is not null)
             {
                 await videoTrack.StopAsync();
@@ -103,6 +105,14 @@ else
         catch (Exception)
         {
             error = $"Could not load media.";
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (mediaDevices is not null)
+        {
+            await mediaDevices.DisposeAsync();
         }
     }
 }
