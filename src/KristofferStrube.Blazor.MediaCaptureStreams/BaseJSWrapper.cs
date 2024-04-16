@@ -10,7 +10,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
 {
     /// <summary>
-    /// A lazily loaded task that evaluates to a helper module instance from the Blazor.Streams library.
+    /// A lazily loaded task that evaluates to a helper module instance from the Blazor.MediaCaptureStreams library.
     /// </summary>
     protected readonly Lazy<Task<IJSObjectReference>> helperTask;
 
