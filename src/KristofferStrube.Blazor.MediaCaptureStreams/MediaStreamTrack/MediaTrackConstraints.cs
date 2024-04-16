@@ -25,12 +25,9 @@ public class MediaTrackConstraints : MediaTrackConstraintSet
     {
         IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         ValueReference advancedReference = new(jSRuntime, jSReference, "advanced");
-        advancedReference.ValueMapper = new()
-        {
-            ["array"] = async () => await advancedReference.GetValueAsync<IJSObjectReference>()
-        };
+        advancedReference.ValueMapper["array"] = async () => await advancedReference.GetValueAsync<IJSObjectReference>();
 
-        if (advancedReference.GetValueAsync() is IJSObjectReference advanced)
+        if (await advancedReference.GetValueAsync() is IJSObjectReference advanced)
         {
             int length = await helper.InvokeAsync<int>("getAttribute", advanced, "length");
             hydrateObject.Advanced = new MediaTrackConstraintSet[length];
