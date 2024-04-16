@@ -50,7 +50,6 @@ public class MediaStreamTrackEvent : Event, IJSCreatable<MediaStreamTrackEvent>
     /// <summary>
     /// Returns the <see cref="MediaStreamTrack"/> that this event is related to.
     /// </summary>
-    /// <returns>A memoized instance of a <see cref="MediaStreamTrack"/>.</returns>
     public async Task<MediaStreamTrack> GetTrackAsync()
     {
         IJSObjectReference helper = await mediaCaptureStreamsHelperTask.Value;
