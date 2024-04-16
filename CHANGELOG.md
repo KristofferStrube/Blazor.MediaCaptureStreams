@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2024-04-16
+### Changed
+- Changed the version of `Blazor.DOM` to use the newest version which is `0.2.1`.
+- Changed `IMediaDevicesService.GetMediaDevicesAsync` method to not be memoized as returned wrappers should be disposed.
+- Changed `MediaStreamTrackEvent.GetTrackAsync` method to not be memoized as returned wrappers should be disposed.
+
 ## [0.1.1] - 2024-04-15
 ### Fixed
 - Fixed that `MediaDevices.GetUserMediaAsync` was not configured to use Error Handling JSInterop for Blazor Server.
