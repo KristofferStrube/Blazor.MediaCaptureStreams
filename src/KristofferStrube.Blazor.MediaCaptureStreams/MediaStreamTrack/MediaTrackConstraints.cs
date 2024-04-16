@@ -1,4 +1,5 @@
-﻿using KristofferStrube.Blazor.WebIDL;
+﻿using KristofferStrube.Blazor.MediaCaptureStreams.Extensions;
+using KristofferStrube.Blazor.WebIDL;
 using Microsoft.JSInterop;
 using System.Text.Json.Serialization;
 
@@ -22,16 +23,23 @@ public class MediaTrackConstraints : MediaTrackConstraintSet
 
     internal static async Task<MediaTrackConstraints> HydrateMediaTrackConstraints(MediaTrackConstraints hydrateObject, IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
+        IJSObjectReference helper = await jSRuntime.GetHelperAsync();
         ValueReference advancedReference = new(jSRuntime, jSReference, "advanced");
-        advancedReference.ValueMapper["array"] = async () => new TypedArray<IJSObjectReference>(jSRuntime, await advancedReference.GetValueAsync<IJSObjectReference>());
-        if (await advancedReference.GetValueAsync() is TypedArray<IJSObjectReference> array)
+        advancedReference.ValueMapper = new()
         {
-            long length = await array.GetLengthAsync();
-            List<MediaTrackConstraintSet> advanced = new((int)length);
+            ["array"] = async () => await advancedReference.GetValueAsync<IJSObjectReference>()
+        };
+
+        if (advancedReference.GetValueAsync() is IJSObjectReference advanced)
+        {
+            int length = await helper.InvokeAsync<int>("getAttribute", advanced, "length");
+            hydrateObject.Advanced = new MediaTrackConstraintSet[length];
             for (long i = 0; i < length; i++)
             {
+                IJSObjectReference element = await helper.InvokeAsync<IJSObjectReference>("getAttribute", advanced, i);
+
                 MediaTrackConstraintSet advancedHydrateObject = new();
-                advanced.Add(await HydrateMediaTrackConstraintSet(advancedHydrateObject, jSRuntime, await array.AtAsync(i)));
+                hydrateObject.Advanced[i] = await HydrateMediaTrackConstraintSet(advancedHydrateObject, jSRuntime, element);
             }
         }
         return await HydrateMediaTrackConstraintSet(hydrateObject, jSRuntime, jSReference);

@@ -11,28 +11,29 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// A <see cref="MediaStreamTrack"/> object represents a media source in the User Agent. An example source is a device connected to the User Agent.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediastreamtrack">See the API definition here</see>.</remarks>
-public class MediaStreamTrack : EventTarget
+public class MediaStreamTrack : EventTarget, IJSCreatable<MediaStreamTrack>
 {
-    private readonly Lazy<Task<IJSObjectReference>> mediaCaptureStreamsHelperTask;
+    /// <summary>
+    /// A lazily loaded task that evaluates to a helper module instance from the Blazor.MediaCaptureStreams library.
+    /// </summary>
+    protected readonly Lazy<Task<IJSObjectReference>> mediaCaptureStreamsHelperTask;
+
     private readonly ErrorHandlingJSObjectReference? errorHandlingJSReference;
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="MediaStreamTrack"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="MediaStreamTrack"/>.</param>
-    /// <returns>A wrapper instance for a <see cref="MediaStreamTrack"/>.</returns>
-    public new static Task<MediaStreamTrack> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    /// <inheritdoc/>
+    public static new async Task<MediaStreamTrack> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference)
     {
-        return Task.FromResult(new MediaStreamTrack(jSRuntime, jSReference));
+        return await CreateAsync(jSRuntime, jSReference, new());
     }
 
-    /// <summary>
-    /// Constructs a wrapper instance for a given JS Instance of a <see cref="MediaStreamTrack"/>.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing <see cref="MediaStreamTrack"/>.</param>
-    protected internal MediaStreamTrack(IJSRuntime jSRuntime, IJSObjectReference jSReference) : base(jSRuntime, jSReference)
+    /// <inheritdoc/>
+    public static new Task<MediaStreamTrack> CreateAsync(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
+    {
+        return Task.FromResult(new MediaStreamTrack(jSRuntime, jSReference, options));
+    }
+
+    /// <inheritdoc cref="CreateAsync(IJSRuntime, IJSObjectReference, CreationOptions)"/>
+    protected internal MediaStreamTrack(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options) : base(jSRuntime, jSReference, options)
     {
         mediaCaptureStreamsHelperTask = new(jSRuntime.GetHelperAsync);
         if (ErrorHandlingJSInterop.ErrorHandlingJSInteropHasBeenSetup)
@@ -188,7 +189,7 @@ public class MediaStreamTrack : EventTarget
     public async Task<MediaStreamTrack> CloneAsync()
     {
         IJSObjectReference jSInstance = await JSReference.InvokeAsync<IJSObjectReference>("clone");
-        return new MediaStreamTrack(JSRuntime, jSInstance);
+        return new MediaStreamTrack(JSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <summary>
@@ -239,5 +240,17 @@ public class MediaStreamTrack : EventTarget
     {
         IJSObjectReference jSReference = errorHandlingJSReference ?? JSReference;
         await jSReference.InvokeVoidAsync("applyConstraints", constraints);
+    }
+
+    /// <inheritdoc/>
+    public new async ValueTask DisposeAsync()
+    {
+        if (mediaCaptureStreamsHelperTask.IsValueCreated)
+        {
+            IJSObjectReference module = await mediaCaptureStreamsHelperTask.Value;
+            await module.DisposeAsync();
+        }
+        await base.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 }

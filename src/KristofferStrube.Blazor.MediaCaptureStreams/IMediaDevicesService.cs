@@ -9,6 +9,5 @@ public interface IMediaDevicesService
     /// <summary>
     /// Return the global object's associated <see cref="MediaDevices"/>.
     /// </summary>
-    /// <returns>A memoized instance of a <see cref="MediaDevices"/> object</returns>
     Task<MediaDevices> GetMediaDevicesAsync();
 }

@@ -10,32 +10,29 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
 {
     /// <summary>
-    /// A lazily evaluated task that gives access to helper methods.
+    /// A lazily loaded task that evaluates to a helper module instance from the Blazor.Streams library.
     /// </summary>
     protected readonly Lazy<Task<IJSObjectReference>> helperTask;
+
+    /// <inheritdoc/>
+    public IJSObjectReference JSReference { get; }
 
     /// <inheritdoc/>
     public IJSRuntime JSRuntime { get; }
 
     /// <inheritdoc/>
-    public IJSObjectReference JSReference { get; }
+    public bool DisposesJSReference { get; }
 
-    /// <summary>
-    /// Constructs a wrapper instance for an equivalent JS instance.
-    /// </summary>
-    /// <param name="jSRuntime">An <see cref="IJSRuntime"/> instance.</param>
-    /// <param name="jSReference">A JS reference to an existing JS instance that should be wrapped.</param>
-    internal BaseJSWrapper(IJSRuntime jSRuntime, IJSObjectReference jSReference)
+    /// <inheritdoc cref="IJSCreatable{T}.CreateAsync(IJSRuntime, IJSObjectReference, CreationOptions)"/>
+    internal BaseJSWrapper(IJSRuntime jSRuntime, IJSObjectReference jSReference, CreationOptions options)
     {
         helperTask = new(jSRuntime.GetHelperAsync);
         JSReference = jSReference;
         JSRuntime = jSRuntime;
+        DisposesJSReference = options.DisposesJSReference;
     }
 
-    /// <summary>
-    /// Disposes the underlying js object reference.
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         if (helperTask.IsValueCreated)
@@ -43,7 +40,7 @@ public abstract class BaseJSWrapper : IJSWrapper, IAsyncDisposable
             IJSObjectReference module = await helperTask.Value;
             await module.DisposeAsync();
         }
-        await JSReference.DisposeAsync();
+        await IJSWrapper.DisposeJSReference(this);
         GC.SuppressFinalize(this);
     }
 }
