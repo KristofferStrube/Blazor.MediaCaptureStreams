@@ -11,6 +11,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// A <see cref="MediaStream"/> object has an input and an output that represent the combined input and output of all the object's tracks. The output of the <see cref="MediaStream"/> controls how the object is rendered, e.g., what is saved if the object is recorded to a file or what is displayed if the object is used in a video element. A single <see cref="MediaStream"/> object can be attached to multiple different outputs at the same time.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediastream">See the API definition here</see>.</remarks>
+[IJSWrapperConverter]
 public class MediaStream : EventTarget, IJSCreatable<MediaStream>
 {
     /// <summary>

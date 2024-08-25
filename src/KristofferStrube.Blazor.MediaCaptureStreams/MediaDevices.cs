@@ -12,6 +12,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// The <see cref="MediaDevices"/> object is the entry point to the API used to examine and get access to media devices available to the User Agent.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediadevices">See the API definition here</see> and <see href="https://www.w3.org/TR/mediacapture-streams/#mediadevices-interface-extensions">here</see>.</remarks>
+[IJSWrapperConverter]
 public class MediaDevices : EventTarget, IJSCreatable<MediaDevices>
 {
     /// <summary>

@@ -9,6 +9,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// An <see cref="Event"/> that is fired when a <see cref="MediaStream"/> adds or removes a <see cref="MediaStreamTrack"/> using the <see cref="MediaStream.AddTrackAsync(MediaStreamTrack)"/> or <see cref="MediaStream.RemoveTrackAsync(MediaStreamTrack)"/> method.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediastreamtrackevent">See the API definition here</see>.</remarks>
+[IJSWrapperConverter]
 public class MediaStreamTrackEvent : Event, IJSCreatable<MediaStreamTrackEvent>
 {
     /// <summary>
