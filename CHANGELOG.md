@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2024-08-25
+### Added
+- Added `IJSWrapperConverter` decoration to all `IJSWrapper` types so that they can be parsed directly in JSInterop.
+
 ## [0.2.0] - 2024-04-16
 ### Changed
 - Changed the version of `Blazor.DOM` to use the newest version which is `0.2.1`.
