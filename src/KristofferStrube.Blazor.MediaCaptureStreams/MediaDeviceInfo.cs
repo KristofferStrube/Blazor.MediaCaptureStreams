@@ -7,6 +7,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// A <see cref="MediaDeviceInfo"/> interface gives access to the basic information of the input or output device it represents. It may be extended by <see cref="InputDeviceInfo"/> specifying that it is an input device.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#device-info">See the API definition here</see>.</remarks>
+[IJSWrapperConverter]
 public class MediaDeviceInfo : BaseJSWrapper, IJSCreatable<MediaDeviceInfo>
 {
     /// <inheritdoc/>

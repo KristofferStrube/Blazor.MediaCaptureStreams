@@ -11,6 +11,7 @@ namespace KristofferStrube.Blazor.MediaCaptureStreams;
 /// A <see cref="MediaStreamTrack"/> object represents a media source in the User Agent. An example source is a device connected to the User Agent.
 /// </summary>
 /// <remarks><see href="https://www.w3.org/TR/mediacapture-streams/#mediastreamtrack">See the API definition here</see>.</remarks>
+[IJSWrapperConverter]
 public class MediaStreamTrack : EventTarget, IJSCreatable<MediaStreamTrack>
 {
     /// <summary>
