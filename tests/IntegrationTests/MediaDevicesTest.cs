@@ -13,7 +13,7 @@ public class MediaDevicesTest : MediaBlazorTest
         // Arrange
         AfterRenderAsync = async () =>
         {
-            MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
+            await using MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
             MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Audio = true });
             MediaStreamTrack[] audioTracks = await mediaStream.GetAudioTracksAsync();
             return audioTracks.Length;
@@ -32,7 +32,7 @@ public class MediaDevicesTest : MediaBlazorTest
         // Arrange
         AfterRenderAsync = async () =>
         {
-            MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
+            await using MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
             MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Video = true });
             MediaStreamTrack[] videoTracks = await mediaStream.GetVideoTracksAsync();
             return videoTracks.Length;
@@ -51,7 +51,7 @@ public class MediaDevicesTest : MediaBlazorTest
         // Arrange
         AfterRenderAsync = async () =>
         {
-            MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
+            await using MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
             MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { });
             MediaStreamTrack[] videoTracks = await mediaStream.GetVideoTracksAsync();
             return videoTracks.Length;
@@ -70,7 +70,7 @@ public class MediaDevicesTest : MediaBlazorTest
         // Arrange
         AfterRenderAsync = async () =>
         {
-            MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
+            await using MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
 
             // Get video track
             MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Video = true });

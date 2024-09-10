@@ -241,7 +241,7 @@ else
     {
         try
         {
-            var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
+            await using var mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
             var mediaConstraints = new MediaStreamConstraints()
                 {
                     Video = new MediaTrackConstraints()

@@ -20,6 +20,6 @@ public class MediaDevicesService : IMediaDevicesService
     public async Task<MediaDevices> GetMediaDevicesAsync()
     {
         IJSObjectReference jSInstance = await jSRuntime.InvokeAsync<IJSObjectReference>("navigator.mediaDevices.valueOf");
-        return await MediaDevices.CreateAsync(jSRuntime, jSInstance);
+        return await MediaDevices.CreateAsync(jSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 }
