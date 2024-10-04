@@ -125,8 +125,9 @@ This project uses the *Blazor.WebIDL* package to make error handling JSInterop a
 - https://github.com/KristofferStrube/Blazor.WebIDL
 - https://github.com/KristofferStrube/Blazor.DOM
 
-The project is used in the *Blazor.WebAudio* library to create `AudioNode`s representing microphones that can be used together with other audio sources in many different ways.
+The project is used in the *Blazor.WebAudio* library to create `AudioNode`s representing microphones that can be used together with other audio sources in many different ways. You can also record your audio and video mediastreams using the `Blazor.MediaStreamRecording` library.
 - https://github.com/KristofferStrube/Blazor.WebAudio
+- https://github.com/KristofferStrube/Blazor.MediaStreamRecording
 
 
 # Related articles
