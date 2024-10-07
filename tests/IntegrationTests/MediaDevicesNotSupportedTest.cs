@@ -12,7 +12,7 @@ public class MediaDevicesNotSupportedTest : MediaBlazorTest
         // Arrange
         AfterRenderAsync = async () =>
         {
-            MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
+            await using MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
             MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Audio = true });
             MediaStreamTrack[] videoTracks = await mediaStream.GetVideoTracksAsync();
             return videoTracks.Length;
