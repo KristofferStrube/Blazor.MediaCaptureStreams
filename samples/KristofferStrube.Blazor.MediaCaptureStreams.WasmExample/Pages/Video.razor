@@ -140,6 +140,8 @@ else
         }
         videoStreamTrack = null;
         frameRate = null;
+        if (mediaDevices is not null)
+            await mediaDevices.DisposeAsync();
     }
 
     public async ValueTask DisposeAsync()
