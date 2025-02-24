@@ -14,11 +14,11 @@ jobs:
         # Checkout the code
         - uses: actions/checkout@v4
 
-        # Install .NET 8.0 SDK
-        - name: Setup .NET 8 preview
+        # Install .NET 9.0 SDK
+        - name: Setup .NET 9 preview
           uses: actions/setup-dotnet@v3
           with:
-            dotnet-version: '8.0.x'
+            dotnet-version: '9.0.x'
             include-prerelease: true
 
         # Build 
@@ -27,7 +27,7 @@ jobs:
 
         # Install PlayWright
         - name: Install PlayWright
-          run: pwsh tests/IntegrationTests/bin/Debug/net8.0/playwright.ps1 install --with-deps
+          run: pwsh tests/IntegrationTests/bin/Debug/net9.0/playwright.ps1 install --with-deps
 
         # Run tests 
         - name: Test
