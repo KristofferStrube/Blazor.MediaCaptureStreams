@@ -26,7 +26,7 @@ else
     @if (videoOptions.Count > 0)
     {
         <label for="videoSource">Video Source</label>
-        <select id="videoSource" @bind=selectedVideoSource @bind:after="LoadMediaStream">
+        <select id="videoSource" @bind=selectedVideoSource @bind:after="SelectDevice">
             @foreach (var option in videoOptions)
             {
                 <option value="@option.id" selected="@(option.id == selectedVideoSource)">@option.label</option>
@@ -34,13 +34,13 @@ else
         </select>
         <br />
         <label for="frameRate">Frame Rate (Current Camera Capabilites are @minimalFrameRate - @maximumFrameRate)</label>
-        <input id="frameRate" type="number" step="1" @bind="frameRate" @bind:after="LoadMediaStream" />
+        <input id="frameRate" type="number" step="1" @bind="frameRate" @bind:after="ChangeFrameRate" />
     }
     <video @ref="videoElement" width="100%" height="400" autoplay controls></video>
 }
 
 @code {
-    private MediaDevices mediaDevices = default!;
+    private MediaDevices? mediaDevices = default;
     private MediaStreamTrack? videoStreamTrack;
     private string? error;
     private ElementReference videoElement;
@@ -51,17 +51,14 @@ else
     private double minimalFrameRate;
     private double maximumFrameRate;
 
-    protected override async Task OnInitializedAsync()
-    {
-        mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
-    }
-
     async Task OpenVideo()
     {
         try
         {
-            await LoadMediaStream();
+            if (mediaDevices is null)
+                mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
 
+            await SelectDevice();
             var deviceInfos = await mediaDevices.EnumerateDevicesAsync();
             videoOptions.Clear();
             foreach (var device in deviceInfos)
@@ -80,45 +77,24 @@ else
         }
         catch (Exception ex)
         {
-            error = $"{ex.GetType().Name}: {ex.Message}";
-            await StopVideoTrack();
+            throw;
+            // await StopVideoTrack();
         }
     }
 
-    async Task LoadMediaStream()
+    async Task ChangeFrameRate()
     {
         try
         {
             var mediaTrackConstraints = new MediaTrackConstraints()
                 {
-                    AspectRatio = 16.0 / 9.0,
-                    FrameRate = frameRate is { } setFrameRate ? new ConstrainDoubleRange() { Exact = setFrameRate } : frameRate,
-                    DeviceId = selectedVideoSource is null ? null : new ConstrainDomString(selectedVideoSource)
+                    FrameRate = frameRate is { } setFrameRate ? new ConstrainDoubleRange() { Exact = setFrameRate } : frameRate
                 };
-            if (videoStreamTrack is null || shownVideoSource != selectedVideoSource)
+            if (selectedVideoSource is not null)
             {
-                var mediaStream = await mediaDevices.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints });
-                var videoTracks = await mediaStream.GetVideoTracksAsync();
-                videoStreamTrack = videoTracks.FirstOrDefault();
-                if (videoStreamTrack is not null)
-                {
-                    var capabilities = await videoStreamTrack.GetCapabilitiesAsync();
-                    minimalFrameRate = capabilities.FrameRate?.Min ?? 0;
-                    maximumFrameRate = capabilities.FrameRate?.Max ?? 0;
-                    frameRate = (maximumFrameRate + minimalFrameRate) / 2.0;
-                    selectedVideoSource = capabilities.DeviceId;
-                    shownVideoSource = selectedVideoSource;
-                }
-
-                StateHasChanged();
-                // We don't have a wrapper for HtmlMediaElement's yet so we use simple JSInterop for this part.
-                var htmlMediaElement = await JSRuntime.InvokeAsync<IJSObjectReference>("getReference", videoElement);
-                await JSRuntime.InvokeVoidAsync("setAttribute", htmlMediaElement, "srcObject", mediaStream.JSReference);
+                mediaTrackConstraints.DeviceId = new ConstrainDOMStringParameters() { Exact = selectedVideoSource };
             }
-            else
-            {
-                await videoStreamTrack.ApplyContraintsAsync(mediaTrackConstraints);
-            }
+            await videoStreamTrack.ApplyContraintsAsync(mediaTrackConstraints);
         }
         catch (OverconstrainedErrorException ex)
         {
@@ -130,6 +106,44 @@ else
             error = $"{ex.GetType().Name}: {ex.Message}";
             await StopVideoTrack();
         }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    async Task SelectDevice()
+    {
+        if (selectedVideoSource != null && shownVideoSource == selectedVideoSource)
+            return; // They picked the same device
+
+        var mediaTrackConstraints = new MediaTrackConstraints();
+        if (selectedVideoSource is not null)
+        {
+            mediaTrackConstraints.DeviceId = new ConstrainDOMStringParameters() { Exact = selectedVideoSource };
+        }
+
+        await using var mediaStream = await mediaDevices!.GetUserMediaAsync(new MediaStreamConstraints() { Video = mediaTrackConstraints });
+        var videoTracks = await mediaStream.GetVideoTracksAsync();
+        videoStreamTrack = videoTracks.FirstOrDefault();
+        foreach (var unusedTrack in videoTracks.Skip(1))
+        {
+            await unusedTrack.DisposeAsync();
+        }
+        if (videoStreamTrack is not null)
+        {
+            var capabilities = await videoStreamTrack.GetCapabilitiesAsync();
+            minimalFrameRate = capabilities.FrameRate?.Min ?? 0;
+            maximumFrameRate = capabilities.FrameRate?.Max ?? 0;
+            frameRate = (maximumFrameRate + minimalFrameRate) / 2.0;
+            selectedVideoSource = capabilities.DeviceId;
+            shownVideoSource = selectedVideoSource;
+        }
+
+        StateHasChanged();
+        // We don't have a wrapper for HtmlMediaElement's yet so we use simple JSInterop for this part.
+        await using var htmlMediaElement = await JSRuntime.InvokeAsync<IJSObjectReference>("getReference", videoElement);
+        await JSRuntime.InvokeVoidAsync("setAttribute", htmlMediaElement, "srcObject", mediaStream.JSReference);
     }
 
     async Task StopVideoTrack()
@@ -142,6 +156,9 @@ else
         frameRate = null;
         if (mediaDevices is not null)
             await mediaDevices.DisposeAsync();
+        mediaDevices = null;
+        shownVideoSource = null;
+        selectedVideoSource = null;
     }
 
     public async ValueTask DisposeAsync()
