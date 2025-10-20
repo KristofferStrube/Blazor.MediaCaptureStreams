@@ -3,98 +3,68 @@ using KristofferStrube.Blazor.WebIDL.Exceptions;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams.IntegrationTests;
 
-public class MediaDevicesTest : MediaBlazorTest
+public class MediaDevicesTest(string browserName) : BlazorTest(browserName)
 {
-    protected override string[] Args => ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"];
-
     [Test]
     public async Task GetUserMedia_ReturnsOneAudioTrack_WhenQueryingAudio()
     {
         // Arrange
-        AfterRenderAsync = async () =>
-        {
-            await using MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
-            MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Audio = true });
-            MediaStreamTrack[] audioTracks = await mediaStream.GetAudioTracksAsync();
-            return audioTracks.Length;
-        };
+        await using MediaDevices mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
+        MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Audio = true });
 
         // Act
-        await DoneLoadingPageAsync();
+        MediaStreamTrack[] audioTracks = await mediaStream.GetAudioTracksAsync();
 
         // Assert
-        Assert.That(EvaluationContext.Result, Is.EqualTo(1));
+        Assert.That(audioTracks.Length, Is.EqualTo(1));
     }
 
     [Test]
     public async Task GetUserMedia_ReturnsOneVideoTrack_WhenQueryingVideo()
     {
         // Arrange
-        AfterRenderAsync = async () =>
-        {
-            await using MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
-            MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Video = true });
-            MediaStreamTrack[] videoTracks = await mediaStream.GetVideoTracksAsync();
-            return videoTracks.Length;
-        };
+        await using MediaDevices mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
+        MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Video = true });
 
         // Act
-        await DoneLoadingPageAsync();
+        MediaStreamTrack[] videoTracks = await mediaStream.GetVideoTracksAsync();
 
         // Assert
-        Assert.That(EvaluationContext.Result, Is.EqualTo(1));
+        Assert.That(videoTracks.Length, Is.EqualTo(1));
     }
 
     [Test]
     public async Task GetUserMedia_Throws_TypeErrorException_WhenNoConstraintsDefined()
     {
         // Arrange
-        AfterRenderAsync = async () =>
-        {
-            await using MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
-            MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { });
-            MediaStreamTrack[] videoTracks = await mediaStream.GetVideoTracksAsync();
-            return videoTracks.Length;
-        };
-
-        // Act
-        await DoneLoadingPageAsync();
+        await using MediaDevices mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
 
         // Assert
-        Assert.That(EvaluationContext.Exception, Is.InstanceOf<TypeErrorException>());
+        Assert.ThrowsAsync<TypeErrorException>(async () => await mediaDevices.GetUserMediaAsync(new() { }));
     }
 
     [Test]
     public async Task GetUserMedia_Throws_OverconstrainedErrorException_WhenOverconstrained()
     {
         // Arrange
-        AfterRenderAsync = async () =>
-        {
-            await using MediaDevices mediaDevices = await EvaluationContext.MediaDevicesService.GetMediaDevicesAsync();
+        await using MediaDevices mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
 
-            // Get video track
-            MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Video = true });
-            MediaStreamTrack[] videoTracks = await mediaStream.GetVideoTracksAsync();
-            MediaStreamTrack videoTrack = videoTracks.Single();
+        // Get video track
+        MediaStream mediaStream = await mediaDevices.GetUserMediaAsync(new() { Video = true });
+        MediaStreamTrack[] videoTracks = await mediaStream.GetVideoTracksAsync();
+        MediaStreamTrack videoTrack = videoTracks.Single();
 
-            // Get max video width
-            MediaTrackCapabilities capabilities = await videoTrack.GetCapabilitiesAsync();
-            ulong maxWidth = capabilities.Width?.Max ?? 0;
-
-            // Get video with a requested width larger than the max capability
-            return await mediaDevices.GetUserMediaAsync(new()
-            {
-                Video = new MediaTrackConstraints()
-                {
-                    Width = new ConstrainULongRange() { Exact = maxWidth + 1 }
-                }
-            });
-        };
-
-        // Act
-        await DoneLoadingPageAsync();
+        // Get max video width
+        MediaTrackCapabilities capabilities = await videoTrack.GetCapabilitiesAsync();
+        ulong maxWidth = capabilities.Width?.Max ?? 0;
 
         // Assert
-        Assert.That(EvaluationContext.Exception, Is.InstanceOf<OverconstrainedErrorException>());
+        Assert.ThrowsAsync<OverconstrainedErrorException>(async () => await mediaDevices.GetUserMediaAsync(new()
+        {
+            Video = new MediaTrackConstraints()
+            {
+                Width = new ConstrainULongRange() { Exact = maxWidth + 1 }
+            }
+        }));
     }
 }
