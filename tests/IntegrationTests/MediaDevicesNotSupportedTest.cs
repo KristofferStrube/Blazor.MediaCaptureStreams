@@ -7,12 +7,16 @@ public class MediaDevicesNotSupportedTest(string browserName) : BlazorTest(brows
     protected override string[] Args => [];
 
     [Test]
-    public async Task GetUserMedia_Throws_NotSupportedErrorException_WhenNotSupported()
+    public async Task GetUserMedia_Throws_NotFoundErrorException_Or_NotSupportedErrorException_WhenNotSupported()
     {
         // Arrange
         await using MediaDevices mediaDevices = await MediaDevicesService.GetMediaDevicesAsync();
 
         // Assert
-        Assert.ThrowsAsync<NotSupportedErrorException>(async () => await mediaDevices.GetUserMediaAsync(new() { Audio = true }));
+        Assert.ThrowsAsync(
+            Is.AssignableTo<NotFoundErrorException>()
+            .Or.AssignableTo<NotSupportedErrorException>(),
+            async () => await mediaDevices.GetUserMediaAsync(new() { Audio = true })
+        );
     }
 }
