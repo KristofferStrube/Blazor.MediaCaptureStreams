@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using KristofferStrube.Blazor.MediaCaptureStreams.Converters;
+using System.Text.Json.Serialization;
 
 namespace KristofferStrube.Blazor.MediaCaptureStreams;
 
@@ -69,6 +70,7 @@ public class MediaTrackCapabilities
     /// </summary>
     [JsonPropertyName("echoCancellation")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonConverter(typeof(NullableArrayOfBooleansIgnoringStringsConverter))]
     public bool[]? EchoCancellation { get; set; }
 
     /// <summary>
