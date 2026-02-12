@@ -1,176 +1,69 @@
 ﻿@page "/Status"
+@using DiffPlex
+@using DiffPlex.DiffBuilder
+@using DiffPlex.DiffBuilder.Model
+@using HtmlAgilityPack;
 
 @inject HttpClient HttpClient
 @inject IJSRuntime JSRuntime
 
 <PageTitle>Media Capture and Streams - Status</PageTitle>
 
-<pre><code>@((MarkupString)compareText)</code></pre>
+@if (compareText is not null)
+{
+    <pre><code>
+                @((MarkupString)compareText)
+                </code></pre>
+}
+else
+{
+    <text>Loading WebIDL from specs ...</text>
+    <br />
+    <small>This make take a while as it is fetching the current specification live.</small>
+}
 
 @code {
-    private string compareText = "";
+    private string? compareText;
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var compareLines = new List<string>();
-        var lines = webIDL.Replace("<", "&lt;").Split('\n');
-        for (int i = 0; i < lines.Count(); i++)
+        if (firstRender)
         {
-            var color = supportedRows.Any(interval => i >= interval.start && i <= interval.end) ? "lightgreen" : "pink";
-            compareLines.Add($"""<span style="background-color:{color};display:block;min-height:21px;">{lines[i]}</span>""");
-        }
+            string domString = await HttpClient.GetStringAsync("https://www.w3.org/TR/mediacapture-streams/");
 
-        compareText = string.Join("", compareLines);
-        StateHasChanged();
+            var dom = new HtmlDocument();
+            dom.LoadHtml(domString);
+
+            var webIdlHolders = dom.DocumentNode.Descendants()
+                .Where(node => node.Id.StartsWith("webidl-"))
+                .Select(webIdlHolder => webIdlHolder.ChildNodes.LastOrDefault())
+                .Where(code => code is not null)
+                .Cast<HtmlNode>()
+                .Select(code => code.InnerText);
+            var fetchedWedIdl = String.Join("\n\n", webIdlHolders).Replace("  ", "    ");
+            var supportedWedIdl = currentlySupportedWebIDL.Replace("<", "&lt;").Replace(">", "&gt;");
+            var compareLines = new List<string>();
+
+            var diffBuilder = new InlineDiffBuilder(new Differ());
+            var diffResult = diffBuilder.BuildDiffModel(fetchedWedIdl, supportedWedIdl);
+
+            foreach (var line in diffResult.Lines)
+            {
+                string color = line.Type switch
+                {
+                    ChangeType.Unchanged => "lightgreen",
+                    ChangeType.Deleted => "pink",
+                    ChangeType.Inserted => "lemonchiffon",
+                    _ => "pink"
+                };
+                compareLines.Add($"""<span style="background-color:{color};display:block;min-height:21px;">{line.Text}</span>""");
+            }
+            compareText = string.Join("", compareLines);
+            StateHasChanged();
+        }
     }
 
-    private (int start, int end)[] supportedRows = new (int start, int end)[] {
-        (0, 216)
-    };
-
-    private const string webIDL = @"partial interface Navigator {
-    [SameObject, SecureContext] readonly attribute MediaDevices mediaDevices;
-};
-
-[Exposed=Window, SecureContext]
-interface MediaDevices : EventTarget {
-    attribute EventHandler ondevicechange;
-    Promise<sequence<MediaDeviceInfo>> enumerateDevices();
-};
-
-[Exposed=Window, SecureContext]
-interface MediaDeviceInfo {
-    readonly attribute DOMString deviceId;
-    readonly attribute MediaDeviceKind kind;
-    readonly attribute DOMString label;
-    readonly attribute DOMString groupId;
-    [Default] object toJSON();
-};
-
-enum MediaDeviceKind {
-    ""audioinput"",
-    ""audiooutput"",
-    ""videoinput""
-};
-
-[Exposed=Window, SecureContext]
-interface InputDeviceInfo : MediaDeviceInfo {
-    MediaTrackCapabilities getCapabilities();
-};
-
-dictionary MediaTrackCapabilities {
-    ULongRange width;
-    ULongRange height;
-    DoubleRange aspectRatio;
-    DoubleRange frameRate;
-    sequence<DOMString> facingMode;
-    sequence<DOMString> resizeMode;
-    ULongRange sampleRate;
-    ULongRange sampleSize;
-    sequence<boolean> echoCancellation;
-    sequence<boolean> autoGainControl;
-    sequence<boolean> noiseSuppression;
-    DoubleRange latency;
-    ULongRange channelCount;
-    DOMString deviceId;
-    DOMString groupId;
-};
-
-dictionary DoubleRange {
-    double max;
-    double min;
-};
-
-dictionary ConstrainDoubleRange : DoubleRange {
-    double exact;
-    double ideal;
-};
-
-dictionary ULongRange {
-    [Clamp] unsigned long max;
-    [Clamp] unsigned long min;
-};
-
-dictionary ConstrainULongRange : ULongRange {
-    [Clamp] unsigned long exact;
-    [Clamp] unsigned long ideal;
-};
-
-dictionary ConstrainBooleanParameters {
-    boolean exact;
-    boolean ideal;
-};
-
-dictionary ConstrainDOMStringParameters {
-    (DOMString or sequence<DOMString>) exact;
-    (DOMString or sequence<DOMString>) ideal;
-};
-
-partial interface MediaDevices {
-    MediaTrackSupportedConstraints getSupportedConstraints();
-    Promise<MediaStream> getUserMedia(optional MediaStreamConstraints constraints = {});
-};
-
-callback NavigatorUserMediaSuccessCallback = undefined (MediaStream stream);
-
-callback NavigatorUserMediaErrorCallback = undefined (DOMException error);
-
-dictionary MediaTrackSupportedConstraints {
-    boolean width = true;
-    boolean height = true;
-    boolean aspectRatio = true;
-    boolean frameRate = true;
-    boolean facingMode = true;
-    boolean resizeMode = true;
-    boolean sampleRate = true;
-    boolean sampleSize = true;
-    boolean echoCancellation = true;
-    boolean autoGainControl = true;
-    boolean noiseSuppression = true;
-    boolean latency = true;
-    boolean channelCount = true;
-    boolean deviceId = true;
-    boolean groupId = true;
-};
-
-dictionary MediaStreamConstraints {
-    (boolean or MediaTrackConstraints) video = false;
-    (boolean or MediaTrackConstraints) audio = false;
-};
-
-dictionary MediaTrackConstraints : MediaTrackConstraintSet {
-    sequence<MediaTrackConstraintSet> advanced;
-};
-
-dictionary MediaTrackConstraintSet {
-    ConstrainULong width;
-    ConstrainULong height;
-    ConstrainDouble aspectRatio;
-    ConstrainDouble frameRate;
-    ConstrainDOMString facingMode;
-    ConstrainDOMString resizeMode;
-    ConstrainULong sampleRate;
-    ConstrainULong sampleSize;
-    ConstrainBoolean echoCancellation;
-    ConstrainBoolean autoGainControl;
-    ConstrainBoolean noiseSuppression;
-    ConstrainDouble latency;
-    ConstrainULong channelCount;
-    ConstrainDOMString deviceId;
-    ConstrainDOMString groupId;
-};
-
-typedef ([Clamp] unsigned long or ConstrainULongRange) ConstrainULong;
-
-typedef (double or ConstrainDoubleRange) ConstrainDouble;
-
-typedef (boolean or ConstrainBooleanParameters) ConstrainBoolean;
-
-typedef (DOMString or
-         sequence<DOMString> or
-         ConstrainDOMStringParameters) ConstrainDOMString;
-
-[Exposed=Window]
+    private const string currentlySupportedWebIDL = @"[Exposed=Window]
 interface MediaStream : EventTarget {
     constructor();
     constructor(MediaStream stream);
@@ -212,6 +105,64 @@ enum MediaStreamTrackState {
     ""ended""
 };
 
+dictionary MediaTrackSupportedConstraints {
+    boolean width = true;
+    boolean height = true;
+    boolean aspectRatio = true;
+    boolean frameRate = true;
+    boolean facingMode = true;
+    boolean resizeMode = true;
+    boolean sampleRate = true;
+    boolean sampleSize = true;
+    boolean echoCancellation = true;
+    boolean autoGainControl = true;
+    boolean noiseSuppression = true;
+    boolean latency = true;
+    boolean channelCount = true;
+    boolean deviceId = true;
+    boolean groupId = true;
+};
+
+dictionary MediaTrackCapabilities {
+    ULongRange width;
+    ULongRange height;
+    DoubleRange aspectRatio;
+    DoubleRange frameRate;
+    sequence<DOMString> facingMode;
+    sequence<DOMString> resizeMode;
+    ULongRange sampleRate;
+    ULongRange sampleSize;
+    sequence<boolean> echoCancellation;
+    sequence<boolean> autoGainControl;
+    sequence<boolean> noiseSuppression;
+    DoubleRange latency;
+    ULongRange channelCount;
+    DOMString deviceId;
+    DOMString groupId;
+};
+
+dictionary MediaTrackConstraints : MediaTrackConstraintSet {
+    sequence<MediaTrackConstraintSet> advanced;
+};
+
+dictionary MediaTrackConstraintSet {
+    ConstrainULong width;
+    ConstrainULong height;
+    ConstrainDouble aspectRatio;
+    ConstrainDouble frameRate;
+    ConstrainDOMString facingMode;
+    ConstrainDOMString resizeMode;
+    ConstrainULong sampleRate;
+    ConstrainULong sampleSize;
+    ConstrainBoolean echoCancellation;
+    ConstrainBoolean autoGainControl;
+    ConstrainBoolean noiseSuppression;
+    ConstrainDouble latency;
+    ConstrainULong channelCount;
+    ConstrainDOMString deviceId;
+    ConstrainDOMString groupId;
+};
+
 dictionary MediaTrackSettings {
     unsigned long width;
     unsigned long height;
@@ -230,6 +181,18 @@ dictionary MediaTrackSettings {
     DOMString groupId;
 };
 
+enum VideoFacingModeEnum {
+    ""user"",
+    ""environment"",
+    ""left"",
+    ""right""
+};
+
+enum VideoResizeModeEnum {
+    ""none"",
+    ""crop-and-scale""
+};
+
 [Exposed=Window]
 interface MediaStreamTrackEvent : Event {
   constructor(DOMString type, MediaStreamTrackEventInit eventInitDict);
@@ -242,8 +205,92 @@ dictionary MediaStreamTrackEventInit : EventInit {
 
 [Exposed=Window]
 interface OverconstrainedError : DOMException {
-  constructor(DOMString constraint, optional DOMString message = "");
+  constructor(DOMString constraint, optional DOMString message = """");
   readonly attribute DOMString constraint;
-};";
+};
+
+partial interface Navigator {
+    [SameObject, SecureContext] readonly attribute MediaDevices mediaDevices;
+};
+
+[Exposed=Window, SecureContext]
+interface MediaDevices : EventTarget {
+    attribute EventHandler ondevicechange;
+    Promise<sequence<MediaDeviceInfo>> enumerateDevices();
+};
+
+[Exposed=Window, SecureContext]
+interface MediaDeviceInfo {
+    readonly attribute DOMString deviceId;
+    readonly attribute MediaDeviceKind kind;
+    readonly attribute DOMString label;
+    readonly attribute DOMString groupId;
+    [Default] object toJSON();
+};
+
+enum MediaDeviceKind {
+    ""audioinput"",
+    ""audiooutput"",
+    ""videoinput""
+};
+
+[Exposed=Window, SecureContext]
+interface InputDeviceInfo : MediaDeviceInfo {
+    MediaTrackCapabilities getCapabilities();
+};
+
+partial interface MediaDevices {
+    MediaTrackSupportedConstraints getSupportedConstraints();
+    Promise<MediaStream> getUserMedia(optional MediaStreamConstraints constraints = {});
+};
+
+dictionary MediaStreamConstraints {
+    (boolean or MediaTrackConstraints) video = false;
+    (boolean or MediaTrackConstraints) audio = false;
+};
+
+callback NavigatorUserMediaSuccessCallback = undefined (MediaStream stream);
+
+callback NavigatorUserMediaErrorCallback = undefined (DOMException error);
+
+dictionary DoubleRange {
+    double max;
+    double min;
+};
+
+dictionary ConstrainDoubleRange : DoubleRange {
+    double exact;
+    double ideal;
+};
+
+dictionary ULongRange {
+    [Clamp] unsigned long max;
+    [Clamp] unsigned long min;
+};
+
+dictionary ConstrainULongRange : ULongRange {
+    [Clamp] unsigned long exact;
+    [Clamp] unsigned long ideal;
+};
+
+dictionary ConstrainBooleanParameters {
+    boolean exact;
+    boolean ideal;
+};
+
+dictionary ConstrainDOMStringParameters {
+    (DOMString or sequence<DOMString>) exact;
+    (DOMString or sequence<DOMString>) ideal;
+};
+
+typedef ([Clamp] unsigned long or ConstrainULongRange) ConstrainULong;
+
+typedef (double or ConstrainDoubleRange) ConstrainDouble;
+
+typedef (boolean or ConstrainBooleanParameters) ConstrainBoolean;
+
+typedef (DOMString or
+         sequence<DOMString> or
+         ConstrainDOMStringParameters) ConstrainDOMString;";
 
 }
