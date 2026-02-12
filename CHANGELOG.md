@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-02-13
+### Fixed 
+- Fixed that `MediaStreamTrack.GetCapabilitiesAsync` would break if a microphone supported the options `"all"` or `"remote-only"` for the `echoCancellation` capability as this wrapper currently doesn't support those values. For now we ignore those capabilty options, but we plan to add support for them in the next major version.
+
 ## [0.4.0] - 2024-10-23
 ### Changed
 - Changed so that `MediaDevices` made from `MediaDevicesService` are marked as `DisposesJSReference`.
