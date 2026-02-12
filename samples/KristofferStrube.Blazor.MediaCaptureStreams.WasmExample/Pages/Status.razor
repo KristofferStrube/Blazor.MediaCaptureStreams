@@ -24,6 +24,13 @@ else
 
 @code {
     private string? compareText;
+    private string[] excludeList = [
+        "interface ConstrainablePattern", // This is a template definition that is not exposed.
+        "dictionary Capabilities", // This is only used in `ConstrainablePattern`.
+        "dictionary Settings", // This is only used in `ConstrainablePattern`.
+        "dictionary ConstraintSet", // This is only used in `ConstrainablePattern`.
+        "dictionary Constraints", // This is only used in `ConstrainablePattern`.
+    ];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -39,7 +46,8 @@ else
                 .Select(webIdlHolder => webIdlHolder.ChildNodes.LastOrDefault())
                 .Where(code => code is not null)
                 .Cast<HtmlNode>()
-                .Select(code => code.InnerText);
+                .Select(code => code.InnerText)
+                .Where(raw => !excludeList.Any(excluded => raw.Contains(excluded)));
             var fetchedWedIdl = String.Join("\n\n", webIdlHolders).Replace("\n  ", "\n    ");
             var supportedWedIdl = currentlySupportedWebIDL.Replace("<", "&lt;").Replace(">", "&gt;");
             var compareLines = new List<string>();
