@@ -85,14 +85,14 @@ public class MediaDevices : EventTarget, IJSCreatable<MediaDevices>
     public async Task<MediaDeviceInfo[]> EnumerateDevicesAsync()
     {
         IJSObjectReference helper = await mediaCaptureStreamsHelperTask.Value;
-        IJSObjectReference devices = await JSReference.InvokeAsync<IJSObjectReference>("enumerateDevices");
+        await using IJSObjectReference devices = await JSReference.InvokeAsync<IJSObjectReference>("enumerateDevices");
         int length = await helper.InvokeAsync<int>("getAttribute", devices, "length");
         return await Task.WhenAll(
             Enumerable
                 .Range(0, length)
                 .Select(async i =>
                     {
-                        ValueReference reference = new(JSRuntime, devices, i);
+                        await using ValueReference reference = new(JSRuntime, devices, i, new() { DisposesJSReference = false }); // We explicitly set DisposesJSReference to false to show that this doesn't dispose devices
                         reference.ValueMapper["mediadeviceinfo"] = async () => await MediaDeviceInfo.CreateAsync(JSRuntime, await reference.GetValueAsync<IJSObjectReference>());
                         reference.ValueMapper["inputdeviceinfo"] = async () => await InputDeviceInfo.CreateAsync(JSRuntime, await reference.GetValueAsync<IJSObjectReference>());
                         return (MediaDeviceInfo)(await reference.GetValueAsync())!;
