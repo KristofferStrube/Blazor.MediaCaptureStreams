@@ -139,7 +139,7 @@ public class MediaDevices : EventTarget, IJSCreatable<MediaDevices>
     {
         IJSObjectReference jSReference = errorHandlingJSReference ?? JSReference;
         IJSObjectReference jSInstance = await jSReference.InvokeAsync<IJSObjectReference>("getUserMedia", constraints);
-        return await MediaStream.CreateAsync(JSRuntime, jSInstance);
+        return await MediaStream.CreateAsync(JSRuntime, jSInstance, new() { DisposesJSReference = true });
     }
 
     /// <inheritdoc/>
