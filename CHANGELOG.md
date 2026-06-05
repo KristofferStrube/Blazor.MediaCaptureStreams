@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Fixed that `MediaDevices.GetUserMediaAsync` would create a `MediaStream` which didn't have `JSObjectReference` disposal turned on.
+- Fixed that `MediaDevices.EnumerateDevicesAsync` would leak references.
 
 ## [0.4.1] - 2026-02-13
 ### Fixed 
